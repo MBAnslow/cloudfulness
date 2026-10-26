@@ -25,6 +25,7 @@ import { getSampleEngine } from "../audio/SampleEngine";
 import { SampleClipEditor } from "./SampleClipEditor";
 import { SampleAutomationStrip } from "./SampleAutomationStrip";
 import { ActivePeriodBand, PeriodTransportButtons } from "../components/PeriodOverlay";
+import { CycleField } from "../components/CycleField";
 import { AudioSoloButton } from "../components/AudioSoloButton";
 import {
   confirmDestructiveClear,
@@ -417,23 +418,7 @@ export function SamplesPanel() {
           ⏮ 00:00
         </button>
         <PeriodTransportButtons />
-        <label style={{ ...row, fontSize: 11 }}>
-          Cycle
-          <input
-            type="number"
-            min={5}
-            max={3600}
-            step={5}
-            value={Math.round(sky.cycleSeconds)}
-            onChange={(e) =>
-              setSky({
-                cycleSeconds: Math.max(5, parseFloat(e.target.value) || 60),
-              })
-            }
-            style={{ ...numInput, width: 60 }}
-          />
-          <span style={{ opacity: 0.6 }}>s / 24h</span>
-        </label>
+        <CycleField labelStyle={row} inputStyle={numInput} />
         <label style={row}>
           <input
             type="checkbox"

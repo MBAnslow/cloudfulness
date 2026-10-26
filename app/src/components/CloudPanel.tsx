@@ -8,7 +8,7 @@ import {
 import {
   deleteMeshBlob,
   invalidateMeshGeometry,
-  loadMeshGeometry,
+  loadCoverGeometry,
   putMeshBlob,
 } from "../mapping/meshAsset";
 import { useDraggable } from "./useDraggable";
@@ -196,7 +196,7 @@ export function CloudPanel({ visible = true }: { visible?: boolean }) {
                 .slice(2, 8)}`;
               try {
                 await putMeshBlob(id, file);
-                const geometry = await loadMeshGeometry(id);
+                const geometry = await loadCoverGeometry(id);
                 if (!geometry) throw new Error("The file contains no mesh geometry.");
                 const previousId = cloudTop.id;
                 updCloudTop({ id, name: file.name, visible: true });

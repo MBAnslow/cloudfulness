@@ -10,6 +10,7 @@ import {
 import { PadSynthPanel } from "./PadSynthPanel";
 import { PadKeyframeEditor } from "./PadKeyframeEditor";
 import { ActivePeriodBand, PeriodTransportButtons } from "../components/PeriodOverlay";
+import { CycleField } from "../components/CycleField";
 import { AudioSoloButton } from "../components/AudioSoloButton";
 import {
   samplePadAutomation,
@@ -397,23 +398,7 @@ export function PadsPanel() {
           ⏮ 00:00
         </button>
         <PeriodTransportButtons />
-        <label style={{ ...rowStyle, fontSize: 11 }}>
-          Cycle
-          <input
-            type="number"
-            min={5}
-            max={3600}
-            step={5}
-            value={Math.round(sky.cycleSeconds)}
-            onChange={(e) =>
-              setSky({
-                cycleSeconds: Math.max(5, parseFloat(e.target.value) || 60),
-              })
-            }
-            style={{ ...numInput, width: 60 }}
-          />
-          <span style={{ opacity: 0.6 }}>s / 24h</span>
-        </label>
+        <CycleField labelStyle={rowStyle} inputStyle={numInput} />
         <label style={{ ...rowStyle, fontSize: 11 }} title="Horizontal piano-roll zoom">
           Zoom
           <select

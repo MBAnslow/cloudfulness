@@ -60,7 +60,9 @@ export function TimeOfDayPanel({ visible = true }: { visible?: boolean }) {
           max={900}
           step={1}
           onChange={(v) => upd({ cycleSeconds: v })}
-          formatValue={(v) => `${v.toFixed(0)}s`}
+          formatValue={(v) =>
+            `${v.toFixed(0)}s${sky.cycleLocked ? " (locked)" : ""}`
+          }
         />
         <SliderRow
           label="Ambient scale"

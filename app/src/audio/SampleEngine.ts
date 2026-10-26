@@ -70,6 +70,8 @@ interface Voice {
   paused: boolean;
   disposed: boolean;
   lastPitchSemitones: number;
+  /** PitchShift is artifact-prone on transients, so keep its dry path at zero shift. */
+  pitchShiftWet: boolean;
 }
 
 type EnterRoll = "accepted" | "rejected";
@@ -471,6 +473,14 @@ export class SampleEngine {
   private applyPitch(voice: Voice): void {
     const cents = voice.randomCents + this.currentPitchCents();
     const target = Math.max(-24, Math.min(24, finite(cents / 100, 0)));
+    // Tone.PitchShift is a granular/FFT processor and is not transparent at
+    // pitch=0, especially on bells and other sharp tonal transients. Use its
+    // unprocessed dry path unless the requested shift is actually audible.
+    const shouldBeWet = Math.abs(target) >= 0.005;
+    if (shouldBeWet !== voice.pitchShiftWet) {
+      voice.pitchShift.wet.rampTo(shouldBeWet ? 1 : 0, 0.02);
+      voice.pitchShiftWet = shouldBeWet;
+    }
     const semitones = Number.isFinite(voice.lastPitchSemitones)
       ? voice.lastPitchSemitones + (target - voice.lastPitchSemitones) * 0.2
       : target;
@@ -552,6 +562,7 @@ export class SampleEngine {
       pitch: 0,
       windowSize: 0.1,
       feedback: 0,
+      wet: 0,
     });
     const gain = new Tone.Gain(0);
     const filter = new Tone.Filter({
@@ -609,6 +620,7 @@ export class SampleEngine {
       paused: true,
       disposed: false,
       lastPitchSemitones: Number.NaN,
+      pitchShiftWet: false,
     };
   }
 

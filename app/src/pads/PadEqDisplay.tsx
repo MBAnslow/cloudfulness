@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import type { PadEq } from "../state";
+import { useSimStore, type PadEq } from "../state";
 import { getPadEngine } from "../audio/PadEngine";
+import { getBellowsPadEngine } from "../audio/BellowsPadEngine";
 
 const W = 300;
 const H = 110;
@@ -33,6 +34,7 @@ const yForSpec = (db: number) =>
  * against what the pad is actually producing.
  */
 export function PadEqDisplay({ eq }: { eq: PadEq }) {
+  const engineType = useSimStore((state) => state.pad.engine);
   const freqs = useMemo(() => {
     const out: number[] = [];
     for (let i = 0; i <= SAMPLES; i++) {
@@ -50,7 +52,8 @@ export function PadEqDisplay({ eq }: { eq: PadEq }) {
       raf = requestAnimationFrame(tick);
       if (t - last < 33) return;
       last = t;
-      const engine = getPadEngine();
+      const engine =
+        engineType === "tone" ? getPadEngine() : getBellowsPadEngine();
       const spec = engine.isStarted() ? engine.getSpectrum() : null;
       if (!spec) {
         setSpectrumPath(null);
@@ -68,7 +71,7 @@ export function PadEqDisplay({ eq }: { eq: PadEq }) {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [freqs]);
+  }, [engineType, freqs]);
 
   const curve = useMemo(() => {
     const pts = freqs.map((f) => {

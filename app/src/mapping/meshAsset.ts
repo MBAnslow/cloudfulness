@@ -76,12 +76,50 @@ const surfaceSamplerCache = new Map<string, MeshSurfaceSampler>();
 export async function loadMeshGeometry(id: string): Promise<BufferGeometry | null> {
   const cached = geometryCache.get(id);
   if (cached) return cached;
+  const parsed = await parseMeshParts(id);
+  if (!parsed) return null;
+  const { parts, centre } = parsed;
+  const merged = parts.length === 1 ? parts[0] : (mergeGeometries(parts, false) ?? parts[0]);
+  // Recentre so the mesh's bounding-box centre sits at origin. The
+  // per-mesh transform sliders (scale/yaw/tilt/offsetY) then operate on
+  // a predictable frame.
+  merged.translate(-centre.x, -centre.y, -centre.z);
+  merged.computeBoundingBox();
+  merged.computeBoundingSphere();
+  geometryCache.set(id, merged);
+  return merged;
+}
+
+/**
+ * Like `loadMeshGeometry`, but keeps only the densest mesh in the file (the
+ * covering itself, not helper frames or planes exported alongside it). It is
+ * recentred on the whole file's bounds so saved offsets keep lining up.
+ */
+export async function loadCoverGeometry(id: string): Promise<BufferGeometry | null> {
+  const key = `${id}#cover`;
+  const cached = geometryCache.get(key);
+  if (cached) return cached;
+  const parsed = await parseMeshParts(id);
+  if (!parsed) return null;
+  const triangles = (g: BufferGeometry) =>
+    (g.index ? g.index.count : g.attributes.position.count) / 3;
+  const cover = parsed.parts.reduce((a, b) => (triangles(b) > triangles(a) ? b : a));
+  cover.translate(-parsed.centre.x, -parsed.centre.y, -parsed.centre.z);
+  cover.computeBoundingBox();
+  cover.computeBoundingSphere();
+  geometryCache.set(key, cover);
+  return cover;
+}
+
+async function parseMeshParts(
+  id: string,
+): Promise<{ parts: BufferGeometry[]; centre: Vector3 } | null> {
   const blob = await getMeshBlob(id);
   if (!blob) return null;
   const buffer = await blob.arrayBuffer();
   const loader = new GLTFLoader();
   const gltf = await loader.parseAsync(buffer, "");
-  const geoms: BufferGeometry[] = [];
+  const parts: BufferGeometry[] = [];
   gltf.scene.updateMatrixWorld(true);
   gltf.scene.traverse((obj) => {
     const m = obj as Mesh;
@@ -96,23 +134,16 @@ export async function loadMeshGeometry(id: string): Promise<BufferGeometry | nul
         if (!keep.has(name)) g.deleteAttribute(name);
       }
       if (!g.attributes.normal) g.computeVertexNormals();
-      if (g.index) g.toNonIndexed();
-      geoms.push(g);
+      parts.push(g);
     }
   });
-  if (geoms.length === 0) return null;
-  const merged = geoms.length === 1 ? geoms[0] : (mergeGeometries(geoms, false) ?? geoms[0]);
-  // Recentre so the mesh's bounding-box centre sits at origin. The
-  // per-mesh transform sliders (scale/yaw/tilt/offsetY) then operate on
-  // a predictable frame.
-  merged.computeBoundingBox();
-  const box = merged.boundingBox ?? new Box3();
-  const centre = new Vector3();
-  box.getCenter(centre);
-  merged.translate(-centre.x, -centre.y, -centre.z);
-  merged.computeBoundingSphere();
-  geometryCache.set(id, merged);
-  return merged;
+  if (parts.length === 0) return null;
+  const box = new Box3();
+  for (const g of parts) {
+    g.computeBoundingBox();
+    if (g.boundingBox) box.union(g.boundingBox);
+  }
+  return { parts, centre: box.getCenter(new Vector3()) };
 }
 
 /**
@@ -154,9 +185,10 @@ export function sampleMeshSurfacePoint(id: string, target: Vector3): boolean {
 
 /** Drop the cached parsed geometry for `id` (call when the blob changes). */
 export function invalidateMeshGeometry(id: string): void {
-  const g = geometryCache.get(id);
-  if (g) g.dispose();
-  geometryCache.delete(id);
+  for (const key of [id, `${id}#cover`]) {
+    geometryCache.get(key)?.dispose();
+    geometryCache.delete(key);
+  }
   surfaceSamplerCache.delete(id);
 }
 

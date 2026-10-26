@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSimStore } from "../state";
 import { getPadEngine } from "./PadEngine";
+import { getBellowsPadEngine } from "./BellowsPadEngine";
 import { modulatedEngineParams } from "./breathModulation";
 
 /**
@@ -16,14 +17,14 @@ import { modulatedEngineParams } from "./breathModulation";
 export function PadRuntime(): null {
   useEffect(() => {
     const engine = getPadEngine();
+    const bellowsEngine = getBellowsPadEngine();
     let raf = 0;
     let unlocking = false;
 
     const unlock = () => {
       if (unlocking) return;
       unlocking = true;
-      engine
-        .start()
+      Promise.all([engine.start(), bellowsEngine.start()])
         .then(() => {
           window.removeEventListener("pointerdown", unlock);
           window.removeEventListener("keydown", unlock);
@@ -44,13 +45,15 @@ export function PadRuntime(): null {
       raf = requestAnimationFrame(tick);
       const state = useSimStore.getState();
       const { pad } = modulatedEngineParams(state, performance.now());
-      engine.update(
-        state.sky.timeHours,
-        state.audioMuted.pad ||
-          (state.audioSolo && state.audioSolo !== "pad")
+      const audiblePad =
+        state.audioMuted.pad || (state.audioSolo && state.audioSolo !== "pad")
           ? { ...pad, master: 0 }
-          : pad,
-      );
+          : pad;
+      engine.update(state.sky.timeHours, {
+        ...audiblePad,
+        enabled: audiblePad.enabled && audiblePad.engine === "tone",
+      });
+      bellowsEngine.update(state.sky.timeHours, audiblePad);
     };
     raf = requestAnimationFrame(tick);
 

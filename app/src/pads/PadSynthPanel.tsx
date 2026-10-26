@@ -1,6 +1,7 @@
 import {
   PAD_DELAY_SYNCS,
   type PadDelaySync,
+  type PadEngineType,
   type PadEq,
   type PadKeyframeParam,
   type PadParams,
@@ -45,13 +46,38 @@ export function PadSynthPanel({
   };
   const setEq = (patch: Partial<PadEq>) =>
     onChange({ eq: { ...pad.eq, ...patch } });
+  const isTone = pad.engine === "tone";
+  const isAnalog = pad.engine === "bellows-analog";
 
   return (
     <section style={sectionStyle}>
+      <div style={engineBar}>
+        <label style={inlineLabel}>
+          <strong style={{ width: 90 }}>Sound engine</strong>
+          <select
+            value={pad.engine}
+            onChange={(e) =>
+              onChange({ engine: e.target.value as PadEngineType })
+            }
+            style={{ ...selectStyle, minWidth: 180 }}
+          >
+            <option value="tone">Warm Pad (current)</option>
+            <option value="bellows-analog">Bellows Fat Analog</option>
+            <option value="bellows-motion">Bellows Motion Pad</option>
+          </select>
+        </label>
+        <span style={hint}>
+          {isTone
+            ? "Original Tone.js engine with all detailed oscillator controls."
+            : "AudioWorklet engine; timeline, automation, envelope, filter, ambience and master EQ remain active."}
+        </span>
+      </div>
       <div style={grid}>
         <Card title="Voicing">
           <label style={inlineLabel}>
-            <span style={{ width: 70 }}>Waveform</span>
+            <span style={{ width: 70 }}>
+              {pad.engine === "bellows-motion" ? "Character" : "Waveform"}
+            </span>
             <select
               value={pad.waveform}
               onChange={(e) =>
@@ -66,88 +92,107 @@ export function PadSynthPanel({
               ))}
             </select>
           </label>
-          <Slider
-            label="Unison"
-            value={pad.unisonCount}
-            min={1}
-            max={8}
-            step={1}
-            onChange={(v) => onChange({ unisonCount: Math.round(v) })}
-          />
-          <Slider
-            label="Spread"
-            value={pad.unisonDetuneCents}
-            min={0}
-            max={50}
-            step={0.5}
-            unit="c"
-            onChange={(v) => setAutomated("unisonDetuneCents", v)}
-          />
-          <Slider
-            label="Width"
-            value={pad.stereoWidth}
-            min={0}
-            max={1}
-            step={0.01}
-            onChange={(v) => setAutomated("stereoWidth", v)}
-          />
-          <Slider
-            label="Drift rate"
-            value={pad.driftRateHz}
-            min={0.02}
-            max={6}
-            step={0.01}
-            unit="Hz"
-            logScale
-            onChange={(v) => setAutomated("driftRateHz", v)}
-          />
-          <Slider
-            label="Drift depth"
-            value={pad.driftDepthCents}
-            min={0}
-            max={30}
-            step={0.5}
-            unit="c"
-            onChange={(v) => setAutomated("driftDepthCents", v)}
-          />
+          {isTone && (
+            <Slider
+              label="Unison"
+              value={pad.unisonCount}
+              min={1}
+              max={8}
+              step={1}
+              onChange={(v) => onChange({ unisonCount: Math.round(v) })}
+            />
+          )}
+          {(isTone || isAnalog) && (
+            <Slider
+              label="Spread"
+              value={pad.unisonDetuneCents}
+              min={0}
+              max={50}
+              step={0.5}
+              unit="c"
+              onChange={(v) => setAutomated("unisonDetuneCents", v)}
+            />
+          )}
+          {isTone && (
+            <>
+              <Slider
+                label="Width"
+                value={pad.stereoWidth}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(v) => setAutomated("stereoWidth", v)}
+              />
+              <Slider
+                label="Drift rate"
+                value={pad.driftRateHz}
+                min={0.02}
+                max={6}
+                step={0.01}
+                unit="Hz"
+                logScale
+                onChange={(v) => setAutomated("driftRateHz", v)}
+              />
+            </>
+          )}
+          {(isTone || isAnalog) && (
+            <Slider
+              label="Drift depth"
+              value={pad.driftDepthCents}
+              min={0}
+              max={30}
+              step={0.5}
+              unit="c"
+              onChange={(v) => setAutomated("driftDepthCents", v)}
+            />
+          )}
           <div style={hint}>
-            Unison oscillators are spread across stereo with independent
-            drift phases for a wide, moving sound.
+            {isTone
+              ? "Unison oscillators are spread across stereo with independent drift phases."
+              : isAnalog
+                ? "Band-limited analog oscillators with worklet-native detune and drift."
+                : "A scanned wavetable creates a smoother, evolving pad texture."}
           </div>
         </Card>
 
         <Card title="Body">
-          <Slider
-            label="Sub level"
-            value={pad.subLevel}
-            min={0}
-            max={1}
-            step={0.01}
-            onChange={(v) => setAutomated("subLevel", v)}
-          />
-          <label style={inlineLabel}>
-            <span style={{ width: 70 }}>Sub octave</span>
-            <select
-              value={pad.subOctave}
-              onChange={(e) =>
-                onChange({ subOctave: parseInt(e.target.value, 10) })
-              }
-              style={selectStyle}
-            >
-              <option value={-1}>-1 oct</option>
-              <option value={-2}>-2 oct</option>
-            </select>
-          </label>
-          <Slider
-            label="Mono below"
-            value={pad.monoBelowHz}
-            min={20}
-            max={400}
-            step={1}
-            unit="Hz"
-            logScale
-            onChange={(v) => setAutomated("monoBelowHz", v)}
-          />
+          {(isTone || isAnalog) && (
+            <Slider
+              label="Sub level"
+              value={pad.subLevel}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={(v) => setAutomated("subLevel", v)}
+            />
+          )}
+          {isTone && (
+            <>
+              <label style={inlineLabel}>
+                <span style={{ width: 70 }}>Sub octave</span>
+                <select
+                  value={pad.subOctave}
+                  onChange={(e) =>
+                    onChange({ subOctave: parseInt(e.target.value, 10) })
+                  }
+                  style={selectStyle}
+                >
+                  <option value={-1}>-1 oct</option>
+                  <option value={-2}>-2 oct</option>
+                </select>
+              </label>
+              <Slider
+                label="Mono below"
+                value={pad.monoBelowHz}
+                min={20}
+                max={400}
+                step={1}
+                unit="Hz"
+                logScale
+                onChange={(v) => setAutomated("monoBelowHz", v)}
+              />
+            </>
+          )}
           <Slider
             label="Glue"
             value={pad.glue}
@@ -157,13 +202,13 @@ export function PadSynthPanel({
             onChange={(v) => setAutomated("glue", v)}
           />
           <div style={hint}>
-            Sub adds an undetuned mono sine for weight. Everything below
-            Mono below stays centred so the low end holds up on speakers.
-            Glue gently compresses the whole pad so layers sit together.
+            {isTone
+              ? "Sub adds weight; Mono below centres the low end. Glue compresses the whole pad."
+              : "Glue gently compresses the worklet output so sustained notes sit together."}
           </div>
         </Card>
 
-        <Card title="Layers">
+        {isTone && <Card title="Layers">
           <Slider
             label="Osc 2"
             value={pad.osc2Level}
@@ -236,7 +281,7 @@ export function PadSynthPanel({
             envelope. Humanize gives every new note slightly different
             tuning, brightness and level.
           </div>
-        </Card>
+        </Card>}
 
         <Card title="Envelope">
           <Slider
@@ -296,7 +341,7 @@ export function PadSynthPanel({
             logScale
             onChange={(v) => setAutomated("filterHz", v)}
           />
-          <label style={inlineLabel}>
+          {isTone && <label style={inlineLabel}>
             <span style={{ width: 70 }}>Slope</span>
             <select
               value={pad.filterSlope}
@@ -310,15 +355,15 @@ export function PadSynthPanel({
               <option value={12}>12 dB/oct (gentle)</option>
               <option value={24}>24 dB/oct (warm, analog)</option>
             </select>
-          </label>
-          <Slider
+          </label>}
+          {isTone && <Slider
             label="Key track"
             value={pad.filterKeyTrack}
             min={0}
             max={1}
             step={0.01}
             onChange={(v) => setAutomated("filterKeyTrack", v)}
-          />
+          />}
           <Slider
             label="Q"
             value={pad.filterQ}
@@ -340,8 +385,8 @@ export function PadSynthPanel({
             Every note has its own filter envelope, so new notes can swell
             without reopening the filter on older notes.
           </div>
-          <Slider
-            label="LFO rate"
+          {(isTone || pad.engine === "bellows-motion") && <Slider
+            label={isTone ? "LFO rate" : "Motion rate"}
             value={pad.filterLfoRateHz}
             min={0.02}
             max={8}
@@ -349,15 +394,15 @@ export function PadSynthPanel({
             unit="Hz"
             logScale
             onChange={(v) => setAutomated("filterLfoRateHz", v)}
-          />
-          <Slider
-            label="LFO depth"
+          />}
+          {(isTone || pad.engine === "bellows-motion") && <Slider
+            label={isTone ? "LFO depth" : "Motion depth"}
             value={pad.filterLfoDepth}
             min={0}
             max={1}
             step={0.01}
             onChange={(v) => setAutomated("filterLfoDepth", v)}
-          />
+          />}
           <div style={hint}>
             LFO sweeps cutoff down from base by up to one octave.
           </div>
@@ -679,6 +724,16 @@ const sectionStyle: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
   gap: 8,
+};
+const engineBar: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  flexWrap: "wrap",
+  gap: 12,
+  padding: "8px 10px",
+  borderRadius: 6,
+  background: "rgba(192,132,252,0.08)",
+  border: "1px solid rgba(192,132,252,0.25)",
 };
 const grid: React.CSSProperties = {
   display: "grid",

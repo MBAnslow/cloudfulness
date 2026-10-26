@@ -1,25 +1,24 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Box3,
   BufferGeometry,
   Color,
-  Data3DTexture,
+  DataTexture,
   DoubleSide,
-  LinearFilter,
+  FloatType,
   Matrix4,
   Mesh,
   MeshStandardMaterial,
+  NearestFilter,
   RGBAFormat,
-  UnsignedByteType,
   Vector3,
 } from "three";
-import { loadMeshGeometry } from "../mapping/meshAsset";
+import { loadCoverGeometry } from "../mapping/meshAsset";
 import { useSimStore } from "../state";
 import { getFrame } from "../stream/frameBuffer";
 
-const VOLUME_SIZE = 24;
-const VOXEL_COUNT = VOLUME_SIZE ** 3;
+/** Upper bound on LEDs the covering shader iterates over. */
+const MAX_COVER_LEDS = 2048;
 const EMISSIVE_SCALE = 0.12;
 
 type ShaderHandle = {
@@ -29,8 +28,10 @@ type ShaderHandle = {
 };
 
 /**
- * A visual-only transport medium. LED colors are splatted into a compact
- * local-space volume, then sampled as emissive light by the cloud-top mesh.
+ * A visual-only transport medium. Each fragment of the cloud-top mesh sums
+ * light from every LED directly (position, outward normal and streamed
+ * colour live in a small float texture), so the glow stays sharp at any
+ * zoom instead of being limited by a baked light grid.
  */
 export function CloudTop() {
   const cloudTop = useSimStore((s) => s.cloudTop);
@@ -42,7 +43,7 @@ export function CloudTop() {
       setGeometry(null);
       return;
     }
-    loadMeshGeometry(cloudTop.id)
+    loadCoverGeometry(cloudTop.id)
       .then((next) => {
         if (!cancelled) setGeometry(next);
       })
@@ -63,39 +64,34 @@ function CloudTopMesh({ geometry }: { geometry: BufferGeometry }) {
   const cloud = useSimStore((s) => s.cloud);
   const cloudTop = useSimStore((s) => s.cloudTop);
   const meshRef = useRef<Mesh>(null);
-  const textureData = useMemo(() => new Uint8Array(VOXEL_COUNT * 4), []);
-  const accumulation = useMemo(() => new Float32Array(VOXEL_COUNT * 3), []);
-  const texture = useMemo(() => {
-    const next = new Data3DTexture(
-      textureData,
-      VOLUME_SIZE,
-      VOLUME_SIZE,
-      VOLUME_SIZE,
-    );
-    next.format = RGBAFormat;
-    next.type = UnsignedByteType;
-    next.minFilter = LinearFilter;
-    next.magFilter = LinearFilter;
-    next.unpackAlignment = 1;
+
+  // Row 0: local position (w = valid), row 1: local normal, row 2: colour.
+  const ledData = useMemo(() => new Float32Array(MAX_COVER_LEDS * 3 * 4), []);
+  const ledTexture = useMemo(() => {
+    const next = new DataTexture(ledData, MAX_COVER_LEDS, 3, RGBAFormat, FloatType);
+    next.minFilter = NearestFilter;
+    next.magFilter = NearestFilter;
+    next.generateMipmaps = false;
     next.needsUpdate = true;
     return next;
-  }, [textureData]);
+  }, [ledData]);
 
-  const localBounds = useMemo(() => {
-    if (!geometry.boundingBox) geometry.computeBoundingBox();
-    return (geometry.boundingBox ?? new Box3()).clone();
-  }, [geometry]);
-  const boundsMin = useMemo(() => new Vector3(), []);
-  const boundsMax = useMemo(() => new Vector3(), []);
-  const tintColor = useMemo(() => new Color(cloudTop.tint), []);
-  const glowStrengthUniform = useMemo(
-    () => ({ value: cloudTop.glowStrength * EMISSIVE_SCALE }),
-    [],
+  const uniforms = useMemo(
+    () => ({
+      cloudTopLeds: { value: ledTexture },
+      cloudTopLedCount: { value: 0 },
+      cloudTopRadius: { value: 1 },
+      cloudTopFocus: { value: 1 },
+      cloudTopGlowStrength: { value: 0 },
+      cloudTopTint: { value: new Color() },
+    }),
+    [ledTexture],
   );
+
   const material = useMemo(() => {
     const next = new MeshStandardMaterial({
       // The covering receives no sun, moon, ambient, or scene lighting.
-      // Its only visible contribution is the LED-driven emissive volume.
+      // Its only visible contribution is the LED light arriving from below.
       color: "#000000",
       transparent: false,
       opacity: 1,
@@ -109,11 +105,7 @@ function CloudTopMesh({ geometry }: { geometry: BufferGeometry }) {
     next.toneMapped = false;
     next.onBeforeCompile = (shader) => {
       const handle = shader as unknown as ShaderHandle;
-      handle.uniforms.cloudTopVolume = { value: texture };
-      handle.uniforms.cloudTopBoundsMin = { value: boundsMin };
-      handle.uniforms.cloudTopBoundsMax = { value: boundsMax };
-      handle.uniforms.cloudTopGlowStrength = glowStrengthUniform;
-      handle.uniforms.cloudTopTint = { value: tintColor };
+      Object.assign(handle.uniforms, uniforms);
       handle.vertexShader = handle.vertexShader
         .replace(
           "#include <common>",
@@ -128,10 +120,12 @@ function CloudTopMesh({ geometry }: { geometry: BufferGeometry }) {
           "#include <common>",
           [
             "#include <common>",
+            `#define CLOUD_TOP_MAX_LEDS ${MAX_COVER_LEDS}`,
             "varying vec3 vCloudTopLocalPosition;",
-            "uniform highp sampler3D cloudTopVolume;",
-            "uniform vec3 cloudTopBoundsMin;",
-            "uniform vec3 cloudTopBoundsMax;",
+            "uniform highp sampler2D cloudTopLeds;",
+            "uniform int cloudTopLedCount;",
+            "uniform float cloudTopRadius;",
+            "uniform float cloudTopFocus;",
             "uniform float cloudTopGlowStrength;",
             "uniform vec3 cloudTopTint;",
           ].join("\n"),
@@ -140,50 +134,55 @@ function CloudTopMesh({ geometry }: { geometry: BufferGeometry }) {
           "#include <emissivemap_fragment>",
           [
             "#include <emissivemap_fragment>",
-            "vec3 cloudTopSize = max(cloudTopBoundsMax - cloudTopBoundsMin, vec3(0.0001));",
-            "vec3 cloudTopUv = clamp((vCloudTopLocalPosition - cloudTopBoundsMin) / cloudTopSize, 0.0, 1.0);",
-            "vec3 cloudTopLedLight = texture(cloudTopVolume, cloudTopUv).rgb;",
-            "totalEmissiveRadiance += cloudTopLedLight * cloudTopTint * cloudTopGlowStrength;",
+            "vec3 cloudTopLedLight = vec3(0.0);",
+            "for (int i = 0; i < CLOUD_TOP_MAX_LEDS; i++) {",
+            "  if (i >= cloudTopLedCount) break;",
+            "  vec4 ledPos = texelFetch(cloudTopLeds, ivec2(i, 0), 0);",
+            "  if (ledPos.w < 0.5) continue;",
+            "  vec3 toFragment = vCloudTopLocalPosition - ledPos.xyz;",
+            "  float dist = length(toFragment);",
+            "  if (dist > cloudTopRadius) continue;",
+            "  vec3 ledNormal = texelFetch(cloudTopLeds, ivec2(i, 1), 0).xyz;",
+            "  float facing = dist < 1e-6 ? 1.0 : max(0.0, dot(toFragment, ledNormal) / dist);",
+            "  if (facing <= 0.0) continue;",
+            "  float weight = exp(-2.5 * dist / cloudTopRadius) * pow(facing, cloudTopFocus);",
+            // A diffuser should spread each source, not add hundreds of
+            // overlapping sources until the entire covering clips white.
+            "  cloudTopLedLight = max(cloudTopLedLight, texelFetch(cloudTopLeds, ivec2(i, 2), 0).rgb * weight);",
+            "}",
+            "totalEmissiveRadiance += min(cloudTopLedLight, vec3(1.0)) * cloudTopTint * cloudTopGlowStrength;",
           ].join("\n"),
         );
     };
-    next.customProgramCacheKey = () => "cloud-top-volume-v1";
+    next.customProgramCacheKey = () => "cloud-top-leds-v2";
     return next;
-  }, [boundsMax, boundsMin, texture, tintColor, glowStrengthUniform]);
+  }, [uniforms]);
 
   useEffect(() => {
-    tintColor.set(cloudTop.tint);
-  }, [cloudTop.tint, tintColor]);
+    uniforms.cloudTopTint.value.set(cloudTop.tint);
+  }, [cloudTop.tint, uniforms]);
   useEffect(() => {
-    glowStrengthUniform.value = cloudTop.glowStrength * EMISSIVE_SCALE;
-  }, [cloudTop.glowStrength, glowStrengthUniform]);
+    uniforms.cloudTopGlowStrength.value = cloudTop.glowStrength * EMISSIVE_SCALE;
+    uniforms.cloudTopFocus.value = cloudTop.glowFocus;
+  }, [cloudTop.glowStrength, cloudTop.glowFocus, uniforms]);
 
   useEffect(
     () => () => {
       material.dispose();
-      texture.dispose();
+      ledTexture.dispose();
     },
-    [material, texture],
+    [material, ledTexture],
   );
 
-  const worldPosition = useMemo(() => new Vector3(), []);
+  const localPosition = useMemo(() => new Vector3(), []);
   const localNormal = useMemo(() => new Vector3(), []);
   const inverseWorld = useMemo(() => new Matrix4(), []);
-  const lastFrameVersion = useRef(-1);
 
   useFrame(() => {
     const mesh = meshRef.current;
     if (!mesh) return;
     const frame = getFrame();
-    if (
-      !frame.buffer ||
-      !frame.positions ||
-      !frame.normals ||
-      frame.version === lastFrameVersion.current
-    ) {
-      return;
-    }
-    lastFrameVersion.current = frame.version;
+    if (!frame.buffer || !frame.positions || !frame.normals) return;
     mesh.updateWorldMatrix(true, false);
     inverseWorld.copy(mesh.matrixWorld).invert();
 
@@ -191,111 +190,38 @@ function CloudTopMesh({ geometry }: { geometry: BufferGeometry }) {
     // first cross the air gap between the pyramid LEDs and that covering, so
     // use a wider transport radius than the final displayed falloff.
     const transportRadius = cloudTop.glowRadius * 2;
-    const localRadius = transportRadius / Math.max(0.001, cloudTop.scale);
-    boundsMin.copy(localBounds.min).addScalar(-localRadius);
-    boundsMax.copy(localBounds.max).addScalar(localRadius);
-    const sizeX = Math.max(0.0001, boundsMax.x - boundsMin.x);
-    const sizeY = Math.max(0.0001, boundsMax.y - boundsMin.y);
-    const sizeZ = Math.max(0.0001, boundsMax.z - boundsMin.z);
-    const stepX = sizeX / (VOLUME_SIZE - 1);
-    const stepY = sizeY / (VOLUME_SIZE - 1);
-    const stepZ = sizeZ / (VOLUME_SIZE - 1);
-    const radiusX = Math.max(1, Math.min(10, Math.ceil(localRadius / stepX)));
-    const radiusY = Math.max(1, Math.min(10, Math.ceil(localRadius / stepY)));
-    const radiusZ = Math.max(1, Math.min(10, Math.ceil(localRadius / stepZ)));
-    accumulation.fill(0);
+    uniforms.cloudTopRadius.value =
+      transportRadius / Math.max(0.001, cloudTop.scale);
 
-    const count = Math.min(frame.count, frame.positionCount);
+    const count = Math.min(frame.count, frame.positionCount, MAX_COVER_LEDS);
+    const colorRow = MAX_COVER_LEDS * 8;
+    const normalRow = MAX_COVER_LEDS * 4;
     for (let led = 0; led < count; led++) {
-      if (frame.positionValidity && !frame.positionValidity[led]) continue;
       const i3 = led * 3;
-      worldPosition
-        .set(
-          frame.positions[i3],
-          frame.positions[i3 + 1],
-          frame.positions[i3 + 2],
-        );
-      mesh.worldToLocal(worldPosition);
-      localNormal
-        .set(
-          frame.normals[i3],
-          frame.normals[i3 + 1],
-          frame.normals[i3 + 2],
-        )
-        .transformDirection(inverseWorld);
-      const gx = ((worldPosition.x - boundsMin.x) / sizeX) * (VOLUME_SIZE - 1);
-      const gy = ((worldPosition.y - boundsMin.y) / sizeY) * (VOLUME_SIZE - 1);
-      const gz = ((worldPosition.z - boundsMin.z) / sizeZ) * (VOLUME_SIZE - 1);
-      if (
-        gx < -radiusX ||
-        gy < -radiusY ||
-        gz < -radiusZ ||
-        gx > VOLUME_SIZE - 1 + radiusX ||
-        gy > VOLUME_SIZE - 1 + radiusY ||
-        gz > VOLUME_SIZE - 1 + radiusZ
-      ) {
+      const i4 = led * 4;
+      if (frame.positionValidity && !frame.positionValidity[led]) {
+        ledData[i4 + 3] = 0;
         continue;
       }
-
-      const minX = Math.max(0, Math.floor(gx - radiusX));
-      const maxX = Math.min(VOLUME_SIZE - 1, Math.ceil(gx + radiusX));
-      const minY = Math.max(0, Math.floor(gy - radiusY));
-      const maxY = Math.min(VOLUME_SIZE - 1, Math.ceil(gy + radiusY));
-      const minZ = Math.max(0, Math.floor(gz - radiusZ));
-      const maxZ = Math.min(VOLUME_SIZE - 1, Math.ceil(gz + radiusZ));
-      for (let z = minZ; z <= maxZ; z++) {
-        for (let y = minY; y <= maxY; y++) {
-          for (let x = minX; x <= maxX; x++) {
-            const dx = (x - gx) * stepX;
-            const dy = (y - gy) * stepY;
-            const dz = (z - gz) * stepZ;
-            const distance = Math.hypot(dx, dy, dz);
-            if (distance > localRadius) continue;
-            const facing =
-              distance < 1e-6
-                ? 1
-                : Math.max(
-                    0,
-                    (dx * localNormal.x +
-                      dy * localNormal.y +
-                      dz * localNormal.z) /
-                      distance,
-                  );
-            if (facing <= 0) continue;
-            const beam = Math.pow(facing, cloudTop.glowFocus);
-            const weight =
-              Math.exp((-2.5 * distance) / Math.max(0.0001, localRadius)) *
-              beam;
-            const voxel = x + y * VOLUME_SIZE + z * VOLUME_SIZE * VOLUME_SIZE;
-            const v3 = voxel * 3;
-            // A diffuser should spread each source, not add hundreds of
-            // overlapping sources until the entire covering clips white.
-            accumulation[v3] = Math.max(
-              accumulation[v3],
-              frame.buffer[i3] * weight,
-            );
-            accumulation[v3 + 1] = Math.max(
-              accumulation[v3 + 1],
-              frame.buffer[i3 + 1] * weight,
-            );
-            accumulation[v3 + 2] = Math.max(
-              accumulation[v3 + 2],
-              frame.buffer[i3 + 2] * weight,
-            );
-          }
-        }
-      }
+      localPosition
+        .set(frame.positions[i3], frame.positions[i3 + 1], frame.positions[i3 + 2])
+        .applyMatrix4(inverseWorld);
+      localNormal
+        .set(frame.normals[i3], frame.normals[i3 + 1], frame.normals[i3 + 2])
+        .transformDirection(inverseWorld);
+      ledData[i4] = localPosition.x;
+      ledData[i4 + 1] = localPosition.y;
+      ledData[i4 + 2] = localPosition.z;
+      ledData[i4 + 3] = 1;
+      ledData[normalRow + i4] = localNormal.x;
+      ledData[normalRow + i4 + 1] = localNormal.y;
+      ledData[normalRow + i4 + 2] = localNormal.z;
+      ledData[colorRow + i4] = frame.buffer[i3] / 255;
+      ledData[colorRow + i4 + 1] = frame.buffer[i3 + 1] / 255;
+      ledData[colorRow + i4 + 2] = frame.buffer[i3 + 2] / 255;
     }
-
-    for (let voxel = 0; voxel < VOXEL_COUNT; voxel++) {
-      const v3 = voxel * 3;
-      const v4 = voxel * 4;
-      textureData[v4] = Math.min(255, accumulation[v3]);
-      textureData[v4 + 1] = Math.min(255, accumulation[v3 + 1]);
-      textureData[v4 + 2] = Math.min(255, accumulation[v3 + 2]);
-      textureData[v4 + 3] = 255;
-    }
-    texture.needsUpdate = true;
+    uniforms.cloudTopLedCount.value = count;
+    ledTexture.needsUpdate = true;
   });
 
   const deg = Math.PI / 180;

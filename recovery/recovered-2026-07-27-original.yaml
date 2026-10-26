@@ -1,0 +1,4453 @@
+# cloud-point-cloud-led — application state
+version: 1
+ellipsoid:
+  rx: 1.25
+  ry: 0.8
+  rz: 0.65
+cloud:
+  opacity: 1
+  showOpacity: true
+  rotationXDeg: 0
+  rotationYDeg: 180
+  offsetX: 0.02
+  offsetY: 0.31
+  offsetZ: -0.12
+  applyLedOffset: false
+strand:
+  ledSize: 0.015000000000000003
+  sensorHemisphereFocus: 12
+  count: 50
+  turns: 5
+  start: bottom
+ambient:
+  color: "#262830"
+  intensity: 0
+directional:
+  color: "#ffffff"
+  intensity: 0
+  position:
+    - 19.996953903127825
+    - 0
+    - 0.3490481287456603
+  spread: 0
+sky:
+  enabled: true
+  visualizationAmount: 1
+  autoPlay: true
+  timeHours: 7.453401331203644
+  cycleSeconds: 900
+  ambientScale: 1.04
+  sunScale: 3
+  moonScale: 1.21
+  sunSpread: 0.76
+  moonSpread: 0.5900000000000001
+  horizonCutoffDeg: -9.5
+  horizonSoftnessDeg: 45
+  sunStops:
+    - id: sun-legacy-0-night
+      timeHours: 0
+      swatchId: custom
+      color: "#05070d"
+    - id: sun-legacy-1-preDawn
+      timeHours: 4.288557692307693
+      swatchId: custom
+      color: "#2a2640"
+    - id: sun-legacy-2-blueHour
+      timeHours: 5.271490384615385
+      swatchId: custom
+      color: "#374577"
+    - id: sun-legacy-3-sunrise
+      timeHours: 6.827948771393501
+      swatchId: custom
+      color: "#f25626"
+    - id: sun-legacy-4-goldenHour
+      timeHours: 8.948887190532435
+      swatchId: custom
+      color: "#e99d2b"
+    - id: sun-legacy-5-day
+      timeHours: 12
+      swatchId: custom
+      color: "#ffffff"
+    - id: sun-legacy-6-afternoon
+      timeHours: 13.911634615384614
+      swatchId: custom
+      color: "#e5a038"
+    - id: sun-legacy-7-sunset
+      timeHours: 15.627411473169829
+      swatchId: custom
+      color: "#d14415"
+    - id: sun-legacy-8-twilight
+      timeHours: 18.20394173093402
+      swatchId: custom
+      color: "#6e47bd"
+    - id: sun-qmyyge-mr9bgrbs
+      timeHours: 16.458556242617938
+      swatchId: custom
+      color: "#e54e34"
+    - id: sun-rw1k75-mr9bh5fm
+      timeHours: 17.152597327404525
+      swatchId: custom
+      color: "#9d434c"
+    - id: sun-7lz4bb-mrasbj5f
+      timeHours: 7.734963755529308
+      swatchId: custom
+      color: "#ff3c00"
+    - id: sun-w8y8yn-mratgmc6
+      timeHours: 2.0676923076923077
+      swatchId: custom
+      color: "#000000"
+    - id: sun-67jmhw-mratgqej
+      timeHours: 22.140865384615385
+      swatchId: custom
+      color: "#000000"
+    - id: sun-40cfp1-mratoelz
+      timeHours: 20.603076923076923
+      swatchId: custom
+      color: "#463f75"
+    - id: sun-tjbujr-mrau5oji
+      timeHours: 6.086940410847866
+      swatchId: custom
+      color: "#a941e1"
+  moonStops:
+    - id: moon-legacy-0-night
+      timeHours: 0
+      swatchId: custom
+      color: "#ffffff"
+    - id: moon-legacy-1-preDawn
+      timeHours: 2.956730769230769
+      swatchId: custom
+      color: "#4763d1"
+    - id: moon-legacy-2-blueHour
+      timeHours: 5.555769230769231
+      swatchId: custom
+      color: "#455cb0"
+    - id: moon-legacy-3-sunrise
+      timeHours: 9.050913461538462
+      swatchId: custom
+      color: "#000000"
+    - id: moon-legacy-4-goldenHour
+      timeHours: 12.183028846153846
+      swatchId: custom
+      color: "#000000"
+    - id: moon-legacy-6-afternoon
+      timeHours: 19.90528846153846
+      swatchId: custom
+      color: "#8596c3"
+    - id: moon-legacy-7-sunset
+      timeHours: 21.173365384615384
+      swatchId: custom
+      color: "#8799e8"
+    - id: moon-legacy-8-twilight
+      timeHours: 23.40158653846154
+      swatchId: custom
+      color: "#ffffff"
+    - id: moon-3ai55i-mr9bh3e9
+      timeHours: 15.026394230769231
+      swatchId: custom
+      color: "#000000"
+    - id: moon-ubvnrn-mrathk2i
+      timeHours: 22.25783653846154
+      swatchId: custom
+      color: "#b5c9e8"
+    - id: moon-ni4l77-mrathrsk
+      timeHours: 1.543125
+      swatchId: custom
+      color: "#e6e9f4"
+  ambientStops:
+    - id: ambient-legacy-0-night
+      timeHours: 0
+      swatchId: custom
+      color: "#1547d1"
+    - id: ambient-legacy-1-preDawn
+      timeHours: 4.5
+      swatchId: custom
+      color: "#1b2d5e"
+    - id: ambient-legacy-2-blueHour
+      timeHours: 6.709615384615384
+      swatchId: custom
+      color: "#2f569c"
+    - id: ambient-legacy-3-sunrise
+      timeHours: 7.954885476736376
+      swatchId: custom
+      color: "#7c68b3"
+    - id: ambient-legacy-5-day
+      timeHours: 12.004903846153846
+      swatchId: noonSky
+      color: "#a1c8f2"
+    - id: ambient-legacy-7-sunset
+      timeHours: 15.892355769230768
+      swatchId: custom
+      color: "#6f3e4f"
+    - id: ambient-legacy-8-twilight
+      timeHours: 18.34354663146437
+      swatchId: custom
+      color: "#36304f"
+    - id: ambient-q0e3u1-mr1t1c3a
+      timeHours: 23.31216346153846
+      swatchId: custom
+      color: "#265bed"
+    - id: ambient-3yraui-mrau6mj3
+      timeHours: 14.880865384615387
+      swatchId: roseDawn
+      color: "#7c68b3"
+    - id: ambient-doz5dh-ms38dk5h
+      timeHours: 9.598184302554483
+      swatchId: noonSky
+      color: "#a1c8f2"
+    - id: ambient-aaolb0-ms38dmhg
+      timeHours: 13.740105143704113
+      swatchId: noonSky
+      color: "#a1c8f2"
+  palette:
+    night:
+      ambientColor: "#0c1734"
+      sunColor: "#05070d"
+      moonColor: "#b7c8ff"
+    preDawn:
+      ambientColor: "#1b2d5e"
+      sunColor: "#463f75"
+      moonColor: "#aebfff"
+    blueHour:
+      ambientColor: "#2f569c"
+      sunColor: "#6f82ca"
+      moonColor: "#9eb3ff"
+    sunrise:
+      ambientColor: "#7c68b3"
+      sunColor: "#f39d84"
+      moonColor: "#95a9ea"
+    goldenHour:
+      ambientColor: "#d89274"
+      sunColor: "#f8c67d"
+      moonColor: "#90a2d7"
+    day:
+      ambientColor: "#a1c8f2"
+      sunColor: "#fff8ea"
+      moonColor: "#7285ad"
+    afternoon:
+      ambientColor: "#f2c190"
+      sunColor: "#ffe5be"
+      moonColor: "#8596c3"
+    sunset:
+      ambientColor: "#d46c8f"
+      sunColor: "#ef708a"
+      moonColor: "#98a6df"
+    twilight:
+      ambientColor: "#7163b2"
+      sunColor: "#8f74c6"
+      moonColor: "#a4b4f0"
+wled:
+  host: 10.0.9.75
+  fps: 20
+  enabled: false
+breath:
+  enabled: true
+  paused: false
+  triggerSource: internal
+  inhaleSeconds: 5.5
+  holdPeakSeconds: 2.4
+  exhaleSeconds: 3.3
+  holdTroughSeconds: 1.3
+  horizonDistance: -0.4
+  cloudDistance: 1.25
+  waveWidth: 0.5
+  waveHeight: 0.5
+  waveDepth: 2
+  waveSpeed: 0.6
+  falloffExponent: 0
+  noiseScale: 10
+  noiseAmount: 0.36
+  noiseContrast: 2.2
+  edgeNoise: 2
+  rimThickness: 0.115
+  rimAmount: 0.14
+  rimArcDegrees: 142
+  breathVsTimeMix: 1
+  activeStartHour: 3.592020515267176
+  activeEndHour: 11.742726270251929
+  exhaleSample:
+    id: br-ex-2esypjxr
+    name: breath.wav
+    durationSec: 5
+    intensityTags: []
+    lengthTags: []
+  exhaleGain: 1.47
+  exhalePitchJitterCents: 280
+  participants:
+    - id: breather-0
+      color: "#ff1900"
+      enabled: true
+      azimuthDeg: 5
+      phaseOffset: 0.66
+      fogSeed: 1414988298
+    - id: participant-r966k-ms341kje
+      color: "#9bff9b"
+      enabled: true
+      azimuthDeg: -66
+      phaseOffset: 0.17
+      fogSeed: 1139890528
+lightning:
+  enabled: true
+  colors:
+    main:
+      - id: lcs-31yq25
+        t: 0
+        color: "#ecffa8"
+      - id: lcs-bkgj7q
+        t: 1
+        color: "#e9f99a"
+    highlight1:
+      - id: lcs-nwh3w4
+        t: 0
+        color: "#a8c8ff"
+      - id: lcs-51rzo2
+        t: 1
+        color: "#a8c8ff"
+    highlight2:
+      - id: lcs-649rx4
+        t: 0
+        color: "#8fffbc"
+      - id: lcs-3bw19c
+        t: 0.9995936451342282
+        color: "#b3ffad"
+  intensityRange:
+    - 0
+    - 1.6
+  keyframes:
+    - id: kf-0
+      t: 0
+      values:
+        intensityRange:
+          - 0
+          - 0.6900000000000001
+        strikesPerMinute: 0
+        strikePerMinute: 0
+        spritesPerMinute: 0
+        subFlashes: 1
+        spanScale: 1
+        minSpanScale: 0.46
+        boltGain: 0.18
+        spriteGain: 0
+        backgroundGain: 0
+        thunderDelayMs: 770
+        pan: -1
+        tintMix: 0
+    - id: kf-r8j5rr
+      t: 0.17
+      values:
+        intensityRange:
+          - 0
+          - 1.6
+        strikesPerMinute: 5
+        strikePerMinute: 0.5
+        spritesPerMinute: 0
+        subFlashes: 0.5
+        spanScale: 0.71
+        minSpanScale: 0.27
+        boltGain: 0.69
+        spriteGain: 0
+        backgroundGain: 0.35
+        thunderDelayMs: 290
+        pan: -0.85
+        tintMix: 0.12
+    - id: kf-qomk7c
+      t: 0.43
+      values:
+        intensityRange:
+          - 0
+          - 1.6
+        strikesPerMinute: 13
+        strikePerMinute: 3.6
+        spritesPerMinute: 0
+        subFlashes: 0.5
+        spanScale: 0.71
+        minSpanScale: 0.27
+        boltGain: 0.69
+        spriteGain: 0
+        backgroundGain: 0.35
+        thunderDelayMs: 290
+        pan: -0.48
+        tintMix: 0.12
+    - id: kf-cx34l0
+      t: 0.54
+      values:
+        intensityRange:
+          - 0.53
+          - 1.733997083733548
+        strikesPerMinute: 12
+        strikePerMinute: 2.8
+        spritesPerMinute: 1
+        subFlashes: 0.54785610133341
+        spanScale: 0.7377565387733778
+        minSpanScale: 0.2958422947200414
+        boltGain: 1.24
+        spriteGain: 1.4
+        backgroundGain: 0.35
+        thunderDelayMs: 0
+        pan: -0.4340581427199264
+        tintMix: 0.1668989793067418
+    - id: kf-ztxvce
+      t: 0.68
+      values:
+        intensityRange:
+          - 1.44
+          - 2.7914144113737622
+        strikesPerMinute: 22.1990941244406
+        strikePerMinute: 4.8
+        spritesPerMinute: 32.3
+        subFlashes: 0.9255051469192008
+        spanScale: 0.9567929852131365
+        minSpanScale: 0.49977277933636843
+        boltGain: 1.08
+        spriteGain: 2.5
+        backgroundGain: 1.52
+        thunderDelayMs: 0
+        pan: -0.07151505895756727
+        tintMix: 0.65
+    - id: kf-3u4p4l
+      t: 0.79
+      values:
+        intensityRange:
+          - 1.84
+          - 3
+        strikesPerMinute: 17
+        strikePerMinute: 12
+        spritesPerMinute: 1
+        subFlashes: 0.9685083285449432
+        spanScale: 1
+        minSpanScale: 0.5229944974142693
+        boltGain: 1.31
+        spriteGain: 0.05
+        backgroundGain: 1.85
+        thunderDelayMs: 0
+        pan: -0.030232004596854545
+        tintMix: 1
+    - id: kf-qzvklz
+      t: 0.86
+      values:
+        intensityRange:
+          - 1.7
+          - 2.911823319925841
+        strikesPerMinute: 2
+        strikePerMinute: 2.4
+        spritesPerMinute: 1
+        subFlashes: 0.9685083285449432
+        spanScale: 0.981734830556067
+        minSpanScale: 0.5229944974142693
+        boltGain: 1.31
+        spriteGain: 0
+        backgroundGain: 1.85
+        thunderDelayMs: 0
+        pan: -0.030232004596854545
+        tintMix: 1
+    - id: kf-2
+      t: 1
+      values:
+        intensityRange:
+          - 0
+          - 0.97
+        strikesPerMinute: 0
+        strikePerMinute: 0
+        spritesPerMinute: 1
+        subFlashes: 0.5
+        spanScale: 0.03
+        minSpanScale: 0
+        boltGain: 0.29
+        spriteGain: 0
+        backgroundGain: 0.35
+        thunderDelayMs: 800
+        pan: 1
+        tintMix: 0.07
+  strikesPerMinute: 13
+  strikePerMinute: 3.6
+  spritesPerMinute: 0
+  falloffDistance: 0.025
+  boltSegments: 12
+  boltJitterRange:
+    - 0.35
+    - 0.6900000000000001
+  travelSpeedRange:
+    - 0.5
+    - 1.3000000000000003
+  subFlashes: 0.5
+  spanScale: 0.71
+  minSpanScale: 0.27
+  activeStartHour: 17.877087309160306
+  activeEndHour: 5.658939549180328
+  boltSamples:
+    - id: ln-wtxcgj8k
+      name: very_long_medium_thunder.wav
+      durationSec: 11
+      intensityTags:
+        - medium
+      lengthTags:
+        - long
+    - id: ln-8oh94y0q
+      name: short_low_thudner.wav
+      durationSec: 3.5
+      intensityTags:
+        - low
+      lengthTags:
+        - short
+    - id: ln-8iog03ic
+      name: short_intense_thunder.wav
+      durationSec: 4
+      intensityTags:
+        - high
+      lengthTags:
+        - short
+    - id: ln-tn46rwej
+      name: medium_medium_thunder.wav
+      durationSec: 5.5
+      intensityTags:
+        - medium
+      lengthTags:
+        - medium
+    - id: ln-pi1j03p7
+      name: long_low_thunder.wav
+      durationSec: 7.5
+      intensityTags:
+        - low
+      lengthTags:
+        - long
+    - id: ln-8rnp2tje
+      name: long_medium_thunder.wav
+      durationSec: 10.5
+      intensityTags:
+        - medium
+      lengthTags:
+        - long
+    - id: ln-nbgkxwye
+      name: medium_strong_thunder.wav
+      durationSec: 7
+      intensityTags:
+        - medium
+      lengthTags:
+        - medium
+  strikeSample:
+    id: ln-78wphykc
+    name: thunder_strike.wav
+    durationSec: 4.5
+    intensityTags: []
+    lengthTags: []
+  backgroundSample:
+    id: ln-wet2geky
+    name: thunder_background.wav
+    durationSec: 308
+    intensityTags: []
+    lengthTags: []
+  spriteSamples:
+    - id: ls-vpmwrm2n
+      name: redsprite lightning.jpg
+      width: 567
+      height: 266
+    - id: ls-p53ys2v8
+      name: fire-sprite.jpg
+      width: 567
+      height: 378
+  spriteDurationMs: 440
+  spriteStrobeHz: 35
+  spriteStrobeDuty: 0.45
+  boltGain: 0.69
+  spriteGain: 0
+  backgroundGain: 0.35
+  boltPitchJitterCents: 295
+  thunderDelayMs: 290
+  pan: -0.48
+  tintMix: 0.12
+  simFps: 8
+  tintTracks:
+    - - id: lcs-31yq25
+        t: 0
+        color: "#edffd1"
+      - id: lcs-bkgj7q
+        t: 1
+        color: "#00ff6e"
+      - id: lcs-e8xvho
+        t: 0.7109768246644296
+        color: "#00ff6e"
+      - id: lcs-qk9jhq
+        t: 0.4064925020973154
+        color: "#f7ffbd"
+    - - id: lcs-01cfka
+        t: 0
+        color: "#77d5ff"
+      - id: lcs-c2lxsl
+        t: 1
+        color: "#77d5ff"
+    - - id: lcs-otttcq
+        t: 0
+        color: "#ff6b9d"
+      - id: lcs-hbvl7u
+        t: 1
+        color: "#ff6b9d"
+    - - id: lcs-7dn99c
+        t: 0
+        color: "#a29bfe"
+      - id: lcs-1flmcz
+        t: 1
+        color: "#a29bfe"
+  paletteTracks:
+    - main:
+        - id: lcs-31yq25
+          t: 0
+          color: "#edffd1"
+        - id: lcs-bkgj7q
+          t: 1
+          color: "#00ff6e"
+        - id: lcs-e8xvho
+          t: 0.7109768246644296
+          color: "#00ff6e"
+        - id: lcs-qk9jhq
+          t: 0.4064925020973154
+          color: "#f7ffbd"
+      highlight1:
+        - id: lcs-nwh3w4
+          t: 0
+          color: "#a8c8ff"
+        - id: lcs-51rzo2
+          t: 1
+          color: "#a8c8ff"
+        - id: lcs-4vtazl
+          t: 0.40939597315436244
+          color: "#a8c8ff"
+      highlight2:
+        - id: lcs-649rx4
+          t: 0
+          color: "#ccffe0"
+        - id: lcs-3bw19c
+          t: 0.9995936451342282
+          color: "#b3ffad"
+        - id: lcs-sih6w1
+          t: 0.41157849203020136
+          color: "#c1ffc9"
+    - main:
+        - id: lcs-01cfka
+          t: 0
+          color: "#77d5ff"
+        - id: lcs-c2lxsl
+          t: 1
+          color: "#77d5ff"
+      highlight1:
+        - id: lcs-aob9y3
+          t: 0
+          color: "#4ecdc4"
+        - id: lcs-moap2c
+          t: 1
+          color: "#4ecdc4"
+      highlight2:
+        - id: lcs-r0fspf
+          t: 0
+          color: "#ffe66d"
+        - id: lcs-cn9oqe
+          t: 1
+          color: "#ffe66d"
+    - main:
+        - id: lcs-otttcq
+          t: 0
+          color: "#ff6b9d"
+        - id: lcs-hbvl7u
+          t: 1
+          color: "#ff6b9d"
+      highlight1:
+        - id: lcs-iapsj7
+          t: 0
+          color: "#c44569"
+        - id: lcs-0cin3m
+          t: 1
+          color: "#c44569"
+      highlight2:
+        - id: lcs-wtse68
+          t: 0
+          color: "#f8b500"
+        - id: lcs-yfm16y
+          t: 1
+          color: "#f8b500"
+    - main:
+        - id: lcs-7dn99c
+          t: 0
+          color: "#a29bfe"
+        - id: lcs-1flmcz
+          t: 1
+          color: "#a29bfe"
+      highlight1:
+        - id: lcs-mh8131
+          t: 0
+          color: "#6c5ce7"
+        - id: lcs-5qyrrg
+          t: 1
+          color: "#6c5ce7"
+      highlight2:
+        - id: lcs-3xi7d3
+          t: 0
+          color: "#fd79a8"
+        - id: lcs-brls2h
+          t: 1
+          color: "#fd79a8"
+  palettes:
+    - - "#00ff6e"
+      - "#a8c8ff"
+      - "#ebb400"
+    - - "#77d5ff"
+      - "#4ecdc4"
+      - "#ffe66d"
+    - - "#ff6b9d"
+      - "#c44569"
+      - "#f8b500"
+    - - "#a29bfe"
+      - "#6c5ce7"
+      - "#fd79a8"
+  intensityEnvelope:
+    - id: env-sccg3g
+      t: 0
+      value: 0
+    - id: env-l7vztg
+      t: 0.87
+      value: 1.170782754290498
+    - id: env-2
+      t: 1
+      value: 0
+  flashDurationMsRange:
+    - 220
+    - 220
+  color: "#cfe7ff"
+  intensity: 1.2
+  boltRadius: 0.25
+  boltJitter: 0.35
+  flashDurationMs: 220
+breathFilter:
+  enabled: true
+  threshold: 0.41
+  keyframes:
+    - id: bf-kf-dmm3ju
+      t: 0
+      threshold: 0.41
+    - id: bf-kf-0
+      t: 0.137
+      threshold: 0.03
+    - id: bf-kf-696jpw
+      t: 0.19
+      threshold: 0
+    - id: bf-kf-6lexgd
+      t: 0.242
+      threshold: 0
+    - id: bf-kf-35v0yz
+      t: 0.377
+      threshold: 0
+    - id: bf-kf-4ikuvf
+      t: 0.469
+      threshold: 0
+    - id: bf-kf-y0xf9n
+      t: 0.563
+      threshold: 0
+    - id: bf-kf-hbqhvc
+      t: 0.655
+      threshold: 0.39
+    - id: bf-kf-h8xf8o
+      t: 0.743
+      threshold: 1
+    - id: bf-kf-1
+      t: 0.9
+      threshold: 1
+    - id: bf-kf-q6h1l0
+      t: 1
+      threshold: 1
+  decayMaxSeconds: 2.5
+  cooldownScale: 10
+  cooldownContrast: 4
+  seed: 524873699
+  showNoise: false
+drone:
+  enabled: true
+  masterGain: 0.81
+  waveform: triangle
+  attack: 3.801
+  decay: 0.8
+  sustain: 0.65
+  release: 3.091
+  tremoloRateHz: 0.05
+  tremoloDepth: 0
+  tremoloShape: sine
+  saturation: 0
+  distortionEnabled: false
+  distortionDrive: 0.5
+  distortionMix: 0.5
+  filters:
+    lp:
+      enabled: true
+      hz: 16712.06036462495
+      q: 0.7
+    hp:
+      enabled: true
+      hz: 41.307603116210586
+      q: 0.7
+  notes:
+    - id: drone-5agrg5-ms2cefur
+      note: C1
+      startHour: 0.9979029555907664
+      endHour: 5.038682463382511
+      gain: 0.53
+      harmonics:
+        - level: 0
+          intervalSemitones: -12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.58
+          intervalSemitones: 0
+          tremRateHz: 0.09212555631909658
+          tremDepth: 0.46
+          driftCents: 22.1
+          driftRateHz: 0.07952707287670542
+          overtones: 0.13
+        - level: 0.85
+          intervalSemitones: 12
+          tremRateHz: 0.22630238038524675
+          tremDepth: 0.29
+          driftCents: 28.9
+          driftRateHz: 0.3
+          overtones: 0.41
+        - level: 0.29
+          intervalSemitones: 24
+          tremRateHz: 0.09323613100813577
+          tremDepth: 0.58
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0.62
+        - level: 0
+          intervalSemitones: 36
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 4
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 7
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 10
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+      filterLfoDepth: 0.65
+      filterQ: 9.65
+      filterHz: 1350.2502235439235
+      filterLfoRateHz: 0.10765487058884438
+      filterLfoShape: triangle
+    - id: drone-mdwiok-ms2ckyk3
+      note: C2
+      startHour: 5.008555148047405
+      endHour: 7.339812192275629
+      gain: 1
+      harmonics:
+        - level: 0
+          intervalSemitones: -12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.51
+          intervalSemitones: 0
+          tremRateHz: 0.7591109226109283
+          tremDepth: 0.07
+          driftCents: 8.5
+          driftRateHz: 0.03473953464439378
+          overtones: 0.03
+        - level: 0.18
+          intervalSemitones: 12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.43
+          intervalSemitones: 24
+          tremRateHz: 0.1368094455663217
+          tremDepth: 1
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0.55
+        - level: 0.15
+          intervalSemitones: 36
+          tremRateHz: 0.2209433233308565
+          tremDepth: 0.63
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0.11
+        - level: 0
+          intervalSemitones: 4
+          tremRateHz: 0.13197866253523052
+          tremDepth: 0.66
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0.1
+        - level: 0.12
+          intervalSemitones: 7
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 10
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+      filterHz: 247.5903217647112
+      filterQ: 1.6
+      filterLfoDepth: 0.04
+      filterLfoRateHz: 0.29456406315547795
+    - id: drone-m38c5k-ms2dvm89
+      note: A#2
+      startHour: 5.919601875193972
+      endHour: 6.893401429808177
+      gain: 0.71
+      harmonics:
+        - level: 0
+          intervalSemitones: -12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 0
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.21
+          intervalSemitones: 12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 24
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 36
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 4
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 7
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 10
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+    - id: drone-76tyw2-ms2dw4wl
+      note: G2
+      startHour: 6.230871006909468
+      endHour: 7.230871006909468
+      gain: 0.81
+      harmonics:
+        - level: 0
+          intervalSemitones: -12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 0
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.1
+          intervalSemitones: 12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0.03
+        - level: 0
+          intervalSemitones: 24
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 36
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 4
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 7
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 10
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+      tremoloDepth: 0.38
+      tremoloRateHz: 1.182653931236307
+      filterQ: 4.3
+      filterHz: 140.1172313232243
+      filterLfoDepth: 0.22
+      filterLfoRateHz: 0.19365805351204463
+      filterLfoShape: sine
+      tremoloShape: sawtooth
+    - id: drone-ifqhki-ms2zp2uu
+      note: A2
+      startHour: 8.805858294706502
+      endHour: 9.805858294706502
+      gain: 0.59
+      harmonics:
+        - level: 0
+          intervalSemitones: -12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.3
+          intervalSemitones: 0
+          tremRateHz: 0.13845868507746426
+          tremDepth: 1
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.07
+          intervalSemitones: 24
+          tremRateHz: 0.3654718414582079
+          tremDepth: 0.21
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0.47
+        - level: 0
+          intervalSemitones: 36
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.22
+          intervalSemitones: 4
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.15
+          intervalSemitones: 7
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 10
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+      tremoloDepth: 0.21
+      tremoloRateHz: 0.25511166779943956
+    - id: drone-eb2jsp-ms301wtz
+      note: D5
+      startHour: 9.44126514236747
+      endHour: 12.712912398239398
+      gain: 1
+      harmonics:
+        - level: 0
+          intervalSemitones: -12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.07
+          intervalSemitones: 0
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.02
+          intervalSemitones: 12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 24
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 36
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 4
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 7
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 10
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+      tremoloDepth: 0.76
+      filterHz: 346.7852614486376
+      filterLfoRateHz: 0.9763190424896648
+      filterLfoDepth: 0
+      filterQ: 3.1
+      tremoloRateHz: 0.8557490786547206
+    - id: drone-ydu11q-ms30wq5l
+      note: C6
+      startHour: 8.887188875472285
+      endHour: 9.884290889261091
+      gain: 0.56
+    - id: drone-xhk282-ms33fv5k
+      note: F1
+      startHour: 4.0820472870330695
+      endHour: 6.329770576091614
+      harmonics:
+        - level: 0
+          intervalSemitones: -12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 0
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 12
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0.23
+          intervalSemitones: 24
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0.31
+        - level: 0
+          intervalSemitones: 36
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 4
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 7
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+        - level: 0
+          intervalSemitones: 10
+          tremRateHz: 4
+          tremDepth: 0
+          driftCents: 0
+          driftRateHz: 0.3
+          overtones: 0
+      gain: 0.54
+      filterLfoDepth: 0.39
+      filterQ: 8.1
+      filterHz: 239.1092580003385
+      filterLfoRateHz: 0.150573672411108
+      tremoloDepth: 0.46
+      tremoloRateHz: 0.2131417475495835
+pad:
+  enabled: true
+  master: 0.63
+  waveform: sine
+  unisonCount: 2
+  unisonDetuneCents: 22.5
+  attack: 3.0963582917808594
+  decay: 0.32064558349952466
+  sustain: 0.75
+  release: 0.6108367006538951
+  filterHz: 1187.071507463504
+  filterQ: 5.2
+  filterEnvAmount: 1570
+  chorusRateHz: 0.05000000000000005
+  chorusDepth: 0.08
+  driftRateHz: 1.811155699537996
+  driftDepthCents: 3
+  filterLfoRateHz: 0.03348167333819993
+  filterLfoDepth: 1
+  saturation: 0
+  filters:
+    lp:
+      enabled: true
+      hz: 3810.92143592649
+      q: 0.7
+    hp:
+      enabled: true
+      hz: 45.18871540441954
+      q: 0.7
+  notes:
+    - id: pad-krn2sq-ms2dqe9p
+      note: F4
+      startHour: 7.045946480394094
+      endHour: 8.029750473417229
+      gain: 0.1
+    - id: pad-ene6rg-ms2dquws
+      note: G4
+      startHour: 7.252235716748926
+      endHour: 8.474547094460918
+      gain: 0.07
+    - id: pad-iawr1m-ms2dqxf1
+      note: A4
+      startHour: 7.69172004606509
+      endHour: 9.69172004606509
+      gain: 0.16
+    - id: pad-bsbzkm-ms2zvdjl
+      note: A3
+      startHour: 7.778942858255755
+      endHour: 9.778942858255755
+      gain: 0.27
+    - id: pad-7ifkev-ms300gcu
+      note: F3
+      startHour: 8.492688817045144
+      endHour: 9.50335371791376
+      gain: 0.17
+    - id: pad-atzx44-ms38g00o
+      note: C4
+      startHour: 8.994881782417323
+      endHour: 9.920850699178123
+      gain: 1
+    - id: pad-q97edv-ms38gs86
+      note: F2
+      startHour: 10.05143146496319
+      endHour: 10.7332216725743
+      gain: 1
+    - id: pad-nanmmr-ms38h0z7
+      note: F3
+      startHour: 10.113317493086122
+      endHour: 10.690499746815721
+      gain: 1
+samples:
+  enabled: true
+  master: 1.84
+  pitchCents: 0
+  pitchLfoRateHz: 0.9
+  pitchLfoDepthCents: 0
+  pitchLfoShape: triangle
+  reverbMix: 0
+  reverbDecay: 0.7
+  delayMix: 0
+  delayTimeSec: 0.02
+  delayFeedback: 0
+  filters:
+    lp:
+      enabled: true
+      hz: 6998.903340567141
+      q: 0.7
+    hp:
+      enabled: true
+      hz: 46.454735927142124
+      q: 0.7
+  library:
+    - id: sample-do8bhl-ms2c0pnt
+      name: diving_bell_phaser
+      durationSec: 9.5
+      trimStartSec: 0
+      trimEndSec: 9.5
+      gain: 0.29
+      pan: 0
+      playbackRate: 0.6461764153187458
+      fadeInSec: 0.01
+      fadeOutSec: 0.05
+      randomPitchCents: 0
+      reverbMix: 0.86
+      reverbDecay: 0
+      delayTimeSec: 0.25
+      delayFeedback: 0.3
+      delayMix: 0
+      triggerProbability: 1
+    - id: sample-sfsofi-ms2elm4a
+      name: gentle_bell
+      durationSec: 6.5
+      trimStartSec: 0
+      trimEndSec: 6.5
+      gain: 0.3
+      pan: 0
+      playbackRate: 0.9930924954370359
+      fadeInSec: 0.01
+      fadeOutSec: 0.05
+      randomPitchCents: 0
+      reverbMix: 0.71
+      reverbDecay: 0.7
+      delayTimeSec: 0.010000000000000012
+      delayFeedback: 0
+      delayMix: 0.09
+      triggerProbability: 1
+    - id: sample-zx3v07-ms2enjeg
+      name: long_chime_bell
+      durationSec: 8
+      trimStartSec: 0
+      trimEndSec: 8
+      gain: 0.25
+      pan: -0.12
+      playbackRate: 1
+      fadeInSec: 0.01
+      fadeOutSec: 0.05
+      randomPitchCents: 0
+      reverbMix: 0
+      reverbDecay: 0.7
+      delayTimeSec: 0.25
+      delayFeedback: 0.3
+      delayMix: 0
+      triggerProbability: 1
+    - id: sample-rybntd-ms2eo1bw
+      name: backward_chime
+      durationSec: 8.5
+      trimStartSec: 0
+      trimEndSec: 8.5
+      gain: 0.43
+      pan: 0
+      playbackRate: 1
+      fadeInSec: 0.01
+      fadeOutSec: 0.05
+      randomPitchCents: 0
+      reverbMix: 0
+      reverbDecay: 0.7
+      delayTimeSec: 0.25
+      delayFeedback: 0.3
+      delayMix: 0
+      triggerProbability: 1
+    - id: sample-aa6ujf-ms30j6y2
+      name: lightning_period_end_ambience
+      durationSec: 108
+      trimStartSec: 0
+      trimEndSec: 108
+      gain: 1
+      pan: 0
+      playbackRate: 1
+      fadeInSec: 0.01
+      fadeOutSec: 0.05
+      randomPitchCents: 0
+      reverbMix: 0
+      reverbDecay: 0.7
+      delayTimeSec: 0.25
+      delayFeedback: 0.3
+      delayMix: 0
+      triggerProbability: 1
+    - id: sample-5sbkv8-ms3789iu
+      name: morning_birdsong
+      durationSec: 125.20843537414966
+      trimStartSec: 0
+      trimEndSec: 125.20843537414966
+      gain: 1
+      pan: 0
+      playbackRate: 1
+      fadeInSec: 0.01
+      fadeOutSec: 0.05
+      randomPitchCents: 0
+      reverbMix: 0
+      reverbDecay: 0.7
+      delayTimeSec: 0.25
+      delayFeedback: 0.3
+      delayMix: 0
+      triggerProbability: 1
+    - id: sample-ygtlrl-ms378kv4
+      name: dusk_ambience
+      durationSec: 473.67156462585035
+      trimStartSec: 0
+      trimEndSec: 315.42
+      gain: 1
+      pan: 0
+      playbackRate: 1
+      fadeInSec: 0.01
+      fadeOutSec: 2
+      randomPitchCents: 0
+      reverbMix: 0
+      reverbDecay: 0.7
+      delayTimeSec: 0.25
+      delayFeedback: 0.3
+      delayMix: 0
+      triggerProbability: 1
+  clips:
+    - id: clip-k0cu05-ms2c0qyp
+      sampleId: sample-do8bhl-ms2c0pnt
+      startHour: 1.5794670518373308
+    - id: clip-vue472-ms2cib0c
+      sampleId: sample-do8bhl-ms2c0pnt
+      startHour: 2.2040872699590186
+    - id: clip-ivjlxo-ms2cih0r
+      sampleId: sample-do8bhl-ms2c0pnt
+      startHour: 1.0032309566393516
+    - id: clip-fb94an-ms2elnts
+      sampleId: sample-sfsofi-ms2elm4a
+      startHour: 4.460743235180682
+    - id: clip-l9wpd6-ms2eluwe
+      sampleId: sample-sfsofi-ms2elm4a
+      startHour: 6.172557877711438
+    - id: clip-krgrs6-ms2en2z7
+      sampleId: sample-sfsofi-ms2elm4a
+      startHour: 6.575835887863767
+    - id: clip-tqr02b-ms2enl2j
+      sampleId: sample-zx3v07-ms2enjeg
+      startHour: 6.329949030468084
+    - id: clip-akiycs-ms2enszx
+      sampleId: sample-zx3v07-ms2enjeg
+      startHour: 6.709116665037495
+    - id: clip-gzd2gj-ms2eo2i2
+      sampleId: sample-rybntd-ms2eo1bw
+      startHour: 6.568292017398326
+    - id: clip-mwji85-ms30j84c
+      sampleId: sample-aa6ujf-ms30j6y2
+      startHour: 1.0150999836411163
+    - id: clip-rgsu06-ms378abu
+      sampleId: sample-5sbkv8-ms3789iu
+      startHour: 7.920223834921746
+    - id: clip-iay9jn-ms378m9c
+      sampleId: sample-ygtlrl-ms378kv4
+      startHour: 15.629972894989944
+dayCycle:
+  periods:
+    - id: dawn
+      name: Dawn
+      startHour: 4.481981019151846
+      endHour: 9.45675143266476
+      color: "#f472b6"
+    - id: day
+      name: Day
+      startHour: 9.45675143266476
+      endHour: 15.987643266475644
+      color: "#facc15"
+    - id: dusk
+      name: Dusk
+      startHour: 15.987643266475644
+      endHour: 20.796982429335372
+      color: "#fb923c"
+    - id: night
+      name: Night
+      startHour: 20.796982429335372
+      endHour: 0.025337407690347646
+      color: "#6366f1"
+    - id: magicalNight
+      name: Magical night
+      startHour: 0.025337407690347646
+      endHour: 4.481981019151846
+      color: "#c084fc"
+  activePeriodId: night
+  autoNext: true
+masterFx:
+  lpEnabled: false
+  lpHz: 20000
+  lpQ: 0.7
+  hpEnabled: false
+  hpHz: 40
+  hpQ: 0.7
+  applyToDrone: true
+  applyToPad: true
+  applyToSamples: true
+  outputGain: 1
+breathMod:
+  drone.filters.lp.hz: -0.61
+  drone.masterGain: -0.19
+  pad.filters.lp.hz: -0.31
+  drone.filters.hp.hz: 0.43
+  pad.master: -0.39
+  samples.filters.lp.hz: -0.44
+  samples.filters.hp.hz: 0.37
+  samples.master: -0.33
+  drone.tremoloDepth: 0.61
+  drone.tremoloRateHz: 0.39
+  pad.saturation: 0.44
+  pad.filters.hp.hz: 0.47
+  drone.saturation: 0.36
+breathModEnabled: true
+ledViewMode: breathPlusTimeOfDay
+ledDisplayMode: leds
+breathTimeCombineMode: revealOnInhale
+ledStreamPipeline:
+  timeOfDayStage: true
+  breathStage: true
+  lightningStage: true
+  locatorOverrideStage: true
+ledLocator:
+  enabled: false
+  highlighted: []
+  color: "#ffe14d"
+mapping:
+  leds:
+    - dir:
+        - 0.13867589619464066
+        - 0.801737772204031
+        - 0.5813652384137964
+      pos:
+        - -0.03228740736748746
+        - -0.18666570588965714
+        - 0.13535716585971586
+      normal:
+        - -0.4046062532086553
+        - -0.7716131571837871
+        - 0.4908226925533516
+      offset: 0
+    - dir:
+        - -0.13558571047678702
+        - 0.7961333110321508
+        - 0.5897357596241637
+      pos:
+        - 0.03156568114542074
+        - -0.18534763108086838
+        - 0.13729625992951447
+      normal:
+        - 0.4045693550839605
+        - -0.771642446102154
+        - 0.490807062194945
+      offset: 0
+    - dir:
+        - -0.18925475042295126
+        - 0.8721942001203958
+        - 0.45106531314066833
+      pos:
+        - 0.036155108184775436
+        - -0.16662343002230062
+        - 0.08617123299972256
+      normal:
+        - 0.21435659557679324
+        - -0.8788159229781255
+        - -0.4263025022831002
+      offset: 0
+    - dir:
+        - -0.009708092968622033
+        - 0.8936307275127232
+        - 0.4486979783506868
+      pos:
+        - 0.0019120691903512232
+        - -0.17600612057908194
+        - 0.08837385292355772
+      normal:
+        - -0.21436407984793687
+        - -0.878805264684015
+        - -0.4263207103045849
+      offset: 0
+    - dir:
+        - 0.1828538382048048
+        - 0.8659197139298584
+        - 0.4655615135311371
+      pos:
+        - -0.03543142142282339
+        - -0.16778847304378486
+        - 0.09021142977427403
+      normal:
+        - -0.21436426112859824
+        - -0.8788051666950759
+        - -0.4263208211439248
+      offset: 0
+    - dir:
+        - 0.30213941147436396
+        - 0.7962221993139302
+        - 0.5241583590420102
+      pos:
+        - -0.0500906417726481
+        - -0.132002908070297
+        - 0.08689839060317403
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.2555530609648825
+        - 0.6493945794357813
+        - 0.716225741809734
+      pos:
+        - -0.05144486833494
+        - -0.13072830554390563
+        - 0.1441819512800115
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.03374609753032707
+        - 0.5879244161659423
+        - 0.808211656546359
+      pos:
+        - -0.007456037696134871
+        - -0.12989906775063081
+        - 0.1785704724005418
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.2385330117064721
+        - 0.6402568554901591
+        - 0.7301870728272952
+      pos:
+        - 0.04800434857918345
+        - -0.12885056475529988
+        - 0.14694886263855456
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.28302429652851724
+        - 0.7948199030029928
+        - 0.5368040325527101
+      pos:
+        - 0.046571331386211945
+        - -0.1307867259070443
+        - 0.08833050305611563
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - 0.0007835123476585767
+        - 0.9650482452494898
+        - 0.2620711171596011
+      pos:
+        - -0.00010794208014916148
+        - -0.13295172098796443
+        - 0.036104729705611405
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.22630075667926608
+        - 0.9729660373402436
+        - -0.04609834822220231
+      pos:
+        - 0.024922822604169476
+        - -0.10715412667789082
+        - -0.005076876330181723
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.2611881542079047
+        - 0.964302773863942
+        - -0.04359940847964266
+      pos:
+        - -0.029135990527732806
+        - -0.10756964292799454
+        - -0.004863589454621509
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.5332904014071497
+        - 0.7933332068051099
+        - 0.2936388440709465
+      pos:
+        - -0.07054170365146295
+        - -0.10493921477612506
+        - 0.03884147223418062
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.4676579699410768
+        - 0.682099918586788
+        - 0.5621705472670087
+      pos:
+        - -0.07143007069361795
+        - -0.1041839304286938
+        - 0.08586592021132841
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.40620191409439504
+        - 0.5871285277166153
+        - 0.7002000406507911
+      pos:
+        - -0.07188988255998141
+        - -0.10391039392136797
+        - 0.12392186482701303
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.3309381904112648
+        - 0.5017058993933484
+        - 0.7992315713491484
+      pos:
+        - -0.0702282734731523
+        - -0.10646682711929938
+        - 0.16960464215789905
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.17029199139791018
+        - 0.4490385533546999
+        - 0.8771345479838611
+      pos:
+        - -0.03931347192246313
+        - -0.10366467861758821
+        - 0.2024945750021283
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.14054194416496588
+        - 0.4619389959387868
+        - 0.8757056160385162
+      pos:
+        - 0.03219408765647718
+        - -0.10581684076991416
+        - 0.20059878587506508
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.33025156827207136
+        - 0.5152554437942567
+        - 0.7908512687567878
+      pos:
+        - 0.06715500690753284
+        - -0.10477462095998598
+        - 0.16081565545342047
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.38922067630241813
+        - 0.6046301604123968
+        - 0.6949313881660314
+      pos:
+        - 0.067350207905859
+        - -0.1046243673300837
+        - 0.12024996697997524
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.43323371915338504
+        - 0.6856698709155411
+        - 0.5849490342817835
+      pos:
+        - 0.06668120183240034
+        - -0.10553493191218481
+        - 0.0900324764490495
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.49710488195566965
+        - 0.8140336554671975
+        - 0.3003929827784795
+      pos:
+        - 0.06545729252681043
+        - -0.10718953091540331
+        - 0.03955485464028402
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.45815347963784325
+        - 0.8068977978193026
+        - -0.3728422360330121
+      pos:
+        - 0.04857818619738946
+        - -0.08555567775173106
+        - -0.03953260287050464
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.04835334943279397
+        - 0.8953777871353524
+        - -0.4426743406876319
+      pos:
+        - 0.004558617317069177
+        - -0.08441369075016006
+        - -0.041734087482100946
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.43207527422621067
+        - 0.8148001818031124
+        - -0.3865379944274038
+      pos:
+        - -0.04530059950652296
+        - -0.08542709781254544
+        - -0.04052627846147694
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.7803473840676247
+        - 0.6235457128572107
+        - 0.04742050354232705
+      pos:
+        - -0.09351106342315807
+        - -0.07472110997321668
+        - 0.005682522687767935
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.7132470298356639
+        - 0.5556266980298981
+        - 0.42726765249313714
+      pos:
+        - -0.09462117850060514
+        - -0.0737108614193629
+        - 0.05668242154951928
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.5875069171720142
+        - 0.47225374755653987
+        - 0.6571240523629005
+      pos:
+        - -0.09370221566642156
+        - -0.07532034297710666
+        - 0.10480553994238906
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.4864318509429999
+        - 0.3880751819567071
+        - 0.7828037477793751
+      pos:
+        - -0.0941613489373011
+        - -0.07512189539252451
+        - 0.15153172371666532
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.408472060157226
+        - 0.33459569865394784
+        - 0.8492327681579346
+      pos:
+        - -0.09338645203714435
+        - -0.07649655438404884
+        - 0.19415485882051786
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.25588954059919927
+        - 0.30970188465784787
+        - 0.9157539438360655
+      pos:
+        - -0.0634369481984236
+        - -0.07677743438824844
+        - 0.2270223134622814
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.09063487049923005
+        - 0.31786747704052126
+        - 0.9437931909531249
+      pos:
+        - -0.02182574495793352
+        - -0.07654553314959656
+        - 0.22727444045889755
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.06581704023785517
+        - 0.32072354587998364
+        - 0.9448833390067256
+      pos:
+        - 0.01580396115240912
+        - -0.07701200846213169
+        - 0.22688500621199514
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.2549557768291763
+        - 0.3162080442742945
+        - 0.9137888293241808
+      pos:
+        - 0.0630225072712266
+        - -0.07816345256945967
+        - 0.2258794205672554
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.3840146912016294
+        - 0.36839555460759854
+        - 0.8466507144547136
+      pos:
+        - 0.0853447914280866
+        - -0.08187353893320626
+        - 0.18816266745284208
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.46615052749610664
+        - 0.43532848138610275
+        - 0.7701901057590722
+      pos:
+        - 0.0863852608833856
+        - -0.08067343533108123
+        - 0.1427287309384317
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5747571705999563
+        - 0.530545381458042
+        - 0.6230375534889318
+      pos:
+        - 0.08686569963945623
+        - -0.08018376822115719
+        - 0.09416253637858538
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.6705596439547762
+        - 0.6287925924069095
+        - 0.3936618341082123
+      pos:
+        - 0.08633236715983139
+        - -0.08095499549435548
+        - 0.050682677231519896
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.71863713937318
+        - 0.6948659303706463
+        - -0.02687007115117238
+      pos:
+        - 0.08525438012489417
+        - -0.08243432035161558
+        - -0.003187688381793223
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5567621279892969
+        - 0.5152733785020605
+        - -0.6515437654094328
+      pos:
+        - 0.06653255279965156
+        - -0.061574686096648845
+        - -0.07785886969348643
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.24666823869620602
+        - 0.5886482083527889
+        - -0.7698363896449447
+      pos:
+        - 0.025467927856336937
+        - -0.06077657254266277
+        - -0.07948383519617641
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.1568405105706455
+        - 0.5987486965986846
+        - -0.7854304886909571
+      pos:
+        - -0.015929694564315457
+        - -0.060812629485179424
+        - -0.07977318959767321
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.5646962781374956
+        - 0.5220285161467714
+        - -0.6392216687403989
+      pos:
+        - -0.06797985806697807
+        - -0.06284338290951512
+        - -0.07695145159736416
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.8660273626221229
+        - 0.31412173624051254
+        - -0.3890040385536063
+      pos:
+        - -0.11770278930154876
+        - -0.04269265167766564
+        - -0.05286999275484213
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.9405329825782998
+        - 0.3389967051323415
+        - 0.021884757064774635
+      pos:
+        - -0.11815059981742737
+        - -0.042585071219640405
+        - 0.0027491828803000475
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8652495296537781
+        - 0.31431379582170893
+        - 0.3905766111661893
+      pos:
+        - -0.11820964414514368
+        - -0.042941279573836665
+        - 0.05336023960145447
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.7339064738565151
+        - 0.26580600791044556
+        - 0.6250827575531168
+      pos:
+        - -0.11853118329730172
+        - -0.04292958540016477
+        - 0.10095536904338151
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.626668981062686
+        - 0.2290048308165966
+        - 0.744877691729667
+      pos:
+        - -0.11850482841363319
+        - -0.04330544354659742
+        - 0.14085842081712593
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.5295558674916363
+        - 0.1975153482689785
+        - 0.8249595568289179
+      pos:
+        - -0.11819188311737816
+        - -0.04408356585127263
+        - 0.18412320493989712
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.45713047015726366
+        - 0.1722753867109273
+        - 0.8725553990363016
+      pos:
+        - -0.11812964434958784
+        - -0.04451864728104514
+        - 0.2254819262605945
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.31977086685257466
+        - 0.1793420093789893
+        - 0.9303671513893101
+      pos:
+        - -0.08683262269727113
+        - -0.04869967419938792
+        - 0.2526378360282837
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.16168337775525574
+        - 0.1898240090970719
+        - 0.968413822148345
+      pos:
+        - -0.04207959064722679
+        - -0.049403449561224846
+        - 0.252038631174589
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.01832030396755739
+        - 0.19451716210212358
+        - 0.9807280153591375
+      pos:
+        - 0.004700418081470724
+        - -0.04990703142918959
+        - 0.2516241927296803
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.17987645515607445
+        - 0.19472214418088513
+        - 0.9642239093934993
+      pos:
+        - 0.046816506012531484
+        - -0.05068039853191189
+        - 0.2509588840428232
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.34022080707669955
+        - 0.19521471398347987
+        - 0.9198592380774504
+      pos:
+        - 0.09210419951480556
+        - -0.052848310835106244
+        - 0.24902327261343116
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.43455809899816816
+        - 0.17028197950098242
+        - 0.8843999695004094
+      pos:
+        - 0.1146801116888323
+        - -0.04493750426649035
+        - 0.23339361874448544
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5194296490444077
+        - 0.19438604365732437
+        - 0.8321099120457924
+      pos:
+        - 0.11598831894917261
+        - -0.04340628316553019
+        - 0.18580962803469842
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.612599728468572
+        - 0.226038888486996
+        - 0.757382329851836
+      pos:
+        - 0.1164231884833411
+        - -0.0429581779030066
+        - 0.14393879338262883
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7407607826109159
+        - 0.2703870187174279
+        - 0.6149506671715744
+      pos:
+        - 0.11677622451547953
+        - -0.0426247932463808
+        - 0.09694306024471425
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8745546461998117
+        - 0.3223847309557643
+        - 0.36224612635182346
+      pos:
+        - 0.11658634275194024
+        - -0.042976910481833386
+        - 0.04829080862005651
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.9405906020188084
+        - 0.33391310180115696
+        - -0.06157401919174545
+      pos:
+        - 0.11765384692082015
+        - -0.04176754570994956
+        - -0.007701990869073555
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8437568628523288
+        - 0.3071982044485654
+        - -0.44011773376356195
+      pos:
+        - 0.11707123954325893
+        - -0.04262374170051797
+        - -0.061066322426686984
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5727922359150986
+        - 0.16759751472254386
+        - -0.8023840274670281
+      pos:
+        - 0.09432778732682943
+        - -0.027600064620283304
+        - -0.13213710862619532
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.3275707695320491
+        - 0.19376271942964426
+        - -0.9247450456787591
+      pos:
+        - 0.046875298556810954
+        - -0.02772739867912888
+        - -0.13233079424958438
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.004209728523656045
+        - 0.2238944129310811
+        - -0.9746043146036261
+      pos:
+        - 0.0005592841756661346
+        - -0.0297455290688583
+        - -0.1294812165750674
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.3281321074627968
+        - 0.2081262099396919
+        - -0.9214189062463192
+      pos:
+        - -0.04642255852843736
+        - -0.029444699078472913
+        - -0.13035793246559457
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.5785075064878846
+        - 0.17890224244074018
+        - -0.7958159665317383
+      pos:
+        - -0.095099833567408
+        - -0.029409425617032636
+        - -0.13082278988378038
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.7833317453911618
+        - 0.012620167703826707
+        - -0.6214757501540694
+      pos:
+        - -0.14820482041105398
+        - -0.0023877108250847656
+        - -0.11758198551676893
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.9417917778286973
+        - -0.008480649615719324
+        - -0.3360897585413119
+      pos:
+        - -0.1515009127206195
+        - 0.0013642359038294194
+        - -0.05406492854763789
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.999579172666675
+        - -0.006991052664868345
+        - -0.028153201481227835
+      pos:
+        - -0.1515946730919011
+        - 0.0010602525265423768
+        - -0.004269672169790545
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.9626522439680354
+        - -0.01358253871634229
+        - 0.2704000218663553
+      pos:
+        - -0.15274461718410226
+        - 0.00215514968111874
+        - 0.04290453596856805
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8659426030475103
+        - -0.0045819907898765186
+        - 0.5001223986062847
+      pos:
+        - -0.15200283692304728
+        - 0.0008042976478641883
+        - 0.08778875543180023
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.7539423313756033
+        - 0.0019635425915258634
+        - 0.6569376724320285
+      pos:
+        - -0.15137284090013559
+        - -0.00039423044434364063
+        - 0.1318967215820357
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.6528600608069853
+        - 0.0022715650039656886
+        - 0.757475135562569
+      pos:
+        - -0.15155932414851403
+        - -0.0005273363733338254
+        - 0.1758453710022671
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.5758732205431081
+        - -0.004859550872634133
+        - 0.8175245675982007
+      pos:
+        - -0.1532298919193269
+        - 0.0012930423371448618
+        - 0.2175291308325206
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.5029893720463242
+        - 0.00971675238200292
+        - 0.8642379743633066
+      pos:
+        - -0.15027725618027832
+        - -0.0029030571381856163
+        - 0.25820687014865634
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.3866683454238404
+        - 0.008301222624439272
+        - 0.9221814790756367
+      pos:
+        - -0.1235454571599881
+        - -0.0026523462710634216
+        - 0.2946487183790272
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.22579654757708575
+        - 0.0024812486126469936
+        - 0.9741713209223473
+      pos:
+        - -0.06870851299265668
+        - -0.0007550288273644457
+        - 0.29643439449762066
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.08673159700814691
+        - 0.009857533049548034
+        - 0.9961829446053538
+      pos:
+        - -0.025640726300659278
+        - -0.0029142125320190115
+        - 0.29450459935162265
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.06674345746441235
+        - 0.009560386963874908
+        - 0.9977243656876367
+      pos:
+        - 0.019709589533439043
+        - -0.0028232175856230945
+        - 0.294631690689674
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.22796081156502498
+        - 0.01833258398819727
+        - 0.9734977065997285
+      pos:
+        - 0.06843098100251954
+        - -0.00550321214427496
+        - 0.29223182093874933
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.3948587297352966
+        - 0.018189507612398806
+        - 0.9185617700321772
+      pos:
+        - 0.12553465531340513
+        - -0.005782862063031469
+        - 0.29203187495021954
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.4866812799600094
+        - 0.007619356284240045
+        - 0.8735463795050041
+      pos:
+        - 0.1485584032688394
+        - -0.002325791950773426
+        - 0.26664813434205326
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5588458198750331
+        - 0.00013156047374810568
+        - 0.8292715672806127
+      pos:
+        - 0.15046343721657807
+        - -0.000035421292202575394
+        - 0.22327276318702977
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.6375837667073954
+        - 0.005767776462932358
+        - 0.7703594441466162
+      pos:
+        - 0.1494938896859237
+        - -0.0013523671450035302
+        - 0.18062572445420438
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7474904549810322
+        - 0.0020335826093708874
+        - 0.6642694364894567
+      pos:
+        - 0.15033285017570952
+        - -0.000408987523114579
+        - 0.1335957094925132
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.864813449898701
+        - 0.004583395943701824
+        - 0.5020723945368137
+      pos:
+        - 0.15011141207088063
+        - -0.0007955704635139726
+        - 0.08714803882219618
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.972936310317441
+        - 0.006157269147015145
+        - 0.23099139400102203
+      pos:
+        - 0.15008446568029044
+        - -0.0009498159747763912
+        - 0.035632568728036884
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.995034365795126
+        - 0.016862626683055562
+        - -0.09809313282813789
+      pos:
+        - 0.1489244694221954
+        - -0.0025237899495379468
+        - -0.014681370073804267
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.9150439550898839
+        - 0.025570282074669597
+        - -0.4025428187511044
+      pos:
+        - 0.14773999298882545
+        - -0.004128493799036015
+        - -0.06499324200677153
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7638453995360525
+        - 0.02417220034391775
+        - -0.6449464398988043
+      pos:
+        - 0.14742319563082273
+        - -0.0046652673725511296
+        - -0.12447553554469817
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5533796381231183
+        - -0.02323811791817335
+        - -0.8326049279138021
+      pos:
+        - 0.12258769159207045
+        - 0.005147835294762704
+        - -0.1844432087658905
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.367271973265984
+        - -0.0558614464613763
+        - -0.9284345946013391
+      pos:
+        - 0.07730841164960026
+        - 0.011758478764320568
+        - -0.1954295700564903
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.1408582856630527
+        - -0.05964638690995466
+        - -0.9882313756851954
+      pos:
+        - 0.027930426896703497
+        - 0.011827128531338937
+        - -0.19595385578971336
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.11192019702674841
+        - -0.05704247976418145
+        - -0.9920786385160435
+      pos:
+        - -0.02204669725186184
+        - 0.011236562437035413
+        - -0.19542547256394815
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.3554398069374952
+        - -0.04879206114499129
+        - -0.9334248113337569
+      pos:
+        - -0.0739160085595299
+        - 0.010146624938563775
+        - -0.19411173143124194
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.56503429960533
+        - -0.03878398273662815
+        - -0.8241553512248763
+      pos:
+        - -0.13224018691542216
+        - 0.009076973079330974
+        - -0.1928846757965823
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.7191666404334554
+        - -0.1649659832629924
+        - -0.6749707902226074
+      pos:
+        - -0.1816647884936302
+        - 0.041671163223105934
+        - -0.17050071423121627
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8447618383865977
+        - -0.21688729734235992
+        - -0.4892211531170973
+      pos:
+        - -0.1869232448853977
+        - 0.04799136934391757
+        - -0.10825158198655987
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.9345480863964502
+        - -0.2345610881652278
+        - -0.2675835759748295
+      pos:
+        - -0.18634742210114208
+        - 0.046771112948688326
+        - -0.053355745204920015
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.9708134946679275
+        - -0.2383595284448115
+        - -0.02656866143058449
+      pos:
+        - -0.18577549973412255
+        - 0.045612633895629306
+        - -0.005084196276259903
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.9459100316658975
+        - -0.22881791065048554
+        - 0.22999255587815676
+      pos:
+        - -0.18554610089871026
+        - 0.04488404786469474
+        - 0.045114461788469104
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8598957962832962
+        - -0.21424661281649676
+        - 0.4633331505849479
+      pos:
+        - -0.18727563063315555
+        - 0.04666050200460359
+        - 0.10090874771581727
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.7734232503926975
+        - -0.18729261212214127
+        - 0.6055889308734598
+      pos:
+        - -0.1864046172727396
+        - 0.04513984763570672
+        - 0.14595446002788107
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.6924339600678271
+        - -0.16215141678145095
+        - 0.7030235621802124
+      pos:
+        - -0.18535048049444747
+        - 0.043404634588334365
+        - 0.18818510148788253
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.605175524883204
+        - -0.14114865075467273
+        - 0.7834791908356431
+      pos:
+        - -0.185604393222901
+        - 0.04328960541259208
+        - 0.24028926127817848
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.5324461490194885
+        - -0.12334720928237713
+        - 0.8374285428360835
+      pos:
+        - -0.1857458040160278
+        - 0.04303012915668547
+        - 0.29214003760099605
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.42038235181843947
+        - -0.1218082724518627
+        - 0.8991337069879488
+      pos:
+        - -0.1584815421772544
+        - 0.045920964057158634
+        - 0.3389678369955571
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.2603507802261264
+        - -0.13302618525804832
+        - 0.9563061775766895
+      pos:
+        - -0.09265315234021007
+        - 0.04734111185396058
+        - 0.34032846714705345
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.09569305339456081
+        - -0.13665553714011822
+        - 0.9859858537022586
+      pos:
+        - -0.03301890320450146
+        - 0.04715301469777525
+        - 0.34021457472118977
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.08596543921712164
+        - -0.13492452714606468
+        - 0.9871197066387734
+      pos:
+        - 0.029575231431710886
+        - 0.046418934777736266
+        - 0.33960500918175596
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.2549476188201804
+        - -0.12998663807205038
+        - 0.9581780552593792
+      pos:
+        - 0.09028191392693263
+        - 0.046030798500414465
+        - 0.3393094986018186
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.4190393585603847
+        - -0.11155426960705252
+        - 0.9010891525868783
+      pos:
+        - 0.1558979540223855
+        - 0.041502264737012684
+        - 0.3352380925807861
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.5110123143106702
+        - -0.11475285770589752
+        - 0.8518792146021541
+      pos:
+        - 0.18308623040966499
+        - 0.041113819682506936
+        - 0.3052125160158743
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.578936062698751
+        - -0.12392501879171748
+        - 0.8059005056608046
+      pos:
+        - 0.18135812599820067
+        - 0.038820883030830367
+        - 0.25245724850223805
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.6620025465684479
+        - -0.14114017294750744
+        - 0.7360924397908445
+      pos:
+        - 0.1813234362416838
+        - 0.038658493510706604
+        - 0.2016167630566666
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.753476854575498
+        - -0.16519529050213022
+        - 0.6363828608745923
+      pos:
+        - 0.18248781405372672
+        - 0.040009360967946606
+        - 0.15412831393167215
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8573998741054529
+        - -0.19556870301947382
+        - 0.4760444709092146
+      pos:
+        - 0.1841779615456336
+        - 0.04201008905189085
+        - 0.10225905426986953
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.9485935887919337
+        - -0.22456683581249262
+        - 0.22302452680367932
+      pos:
+        - 0.1858745918099749
+        - 0.044003321795442085
+        - 0.04370111012034199
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.9714990977001441
+        - -0.22995733420272302
+        - -0.05752501728972353
+      pos:
+        - 0.18599410111956982
+        - 0.04402547338658391
+        - -0.01101320002048238
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.9144012177136028
+        - -0.2173872588363435
+        - -0.3414867387461787
+      pos:
+        - 0.18631751577825417
+        - 0.04429461952107516
+        - -0.06958101061314806
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7936813059893351
+        - -0.18809049133974545
+        - -0.5785256706410155
+      pos:
+        - 0.1863318992405052
+        - 0.04415784801272049
+        - -0.13581998990836242
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.6742262382812606
+        - -0.15214748484733526
+        - -0.7226825876328631
+      pos:
+        - 0.1844236626673439
+        - 0.041617479160555026
+        - -0.19767811187076237
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5138533707107463
+        - -0.1647567445037604
+        - -0.8419085036687343
+      pos:
+        - 0.1564968158549519
+        - 0.05017755526212242
+        - -0.25640777617771215
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.33953061880830404
+        - -0.18266752664243213
+        - -0.9226871266046722
+      pos:
+        - 0.09513615521165417
+        - 0.05118326655716143
+        - -0.2585360519076414
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.1296397342245048
+        - -0.1974668761753962
+        - -0.9716997335204585
+      pos:
+        - 0.035023178266857136
+        - 0.05334720598943532
+        - -0.26251220887270055
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.1438443575241735
+        - -0.19866551711318758
+        - -0.9694538736415504
+      pos:
+        - -0.03924735037015155
+        - 0.05420508173425076
+        - -0.26451156306298906
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.3490092371941236
+        - -0.1857836391065049
+        - -0.9185189120500025
+      pos:
+        - -0.10015848519251727
+        - 0.0533160899008267
+        - -0.2635960686634693
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.5064489838012696
+        - -0.17209366005629376
+        - -0.844922007628568
+      pos:
+        - -0.15897260595214627
+        - 0.054019612008397555
+        - -0.26521813188540144
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.6326229526452041
+        - -0.2611415200889186
+        - -0.7291044549802947
+      pos:
+        - -0.2183035608951811
+        - 0.09011390354178858
+        - -0.2515970976411983
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.7383375444951816
+        - -0.30630127412771496
+        - -0.6008637115491033
+      pos:
+        - -0.21951284864447063
+        - 0.09106548316349959
+        - -0.1786409291422589
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8238440798474129
+        - -0.34179251286417917
+        - -0.4521712178482387
+      pos:
+        - -0.22007578329536104
+        - 0.09130399408466441
+        - -0.12078976760990917
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.89360228927846
+        - -0.3741895311825741
+        - -0.24790551294729396
+      pos:
+        - -0.22161199943707333
+        - 0.09279843076582663
+        - -0.061480187612414805
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.9247118791902887
+        - -0.38040328152625724
+        - -0.014187455318695898
+      pos:
+        - -0.2203387370416876
+        - 0.09064183180106085
+        - -0.00338056215898741
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.9056256977156262
+        - -0.3761702860887745
+        - 0.19580094867230569
+      pos:
+        - -0.22182523568053902
+        - 0.09213968042000097
+        - 0.047959760522769346
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8525049028972174
+        - -0.34943514777205514
+        - 0.3887550231671971
+      pos:
+        - -0.2209708059571578
+        - 0.09057421953883943
+        - 0.10076600204551092
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.7775434909157031
+        - -0.3237786172609822
+        - 0.5390672747804196
+      pos:
+        - -0.22311577779826264
+        - 0.09290813808955403
+        - 0.15468512784613173
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.701527232327545
+        - -0.2909757509739556
+        - 0.6505325930712444
+      pos:
+        - -0.22320834001287615
+        - 0.09258117342559863
+        - 0.20698312700127375
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.617714069987245
+        - -0.2510454596222536
+        - 0.7452553286913448
+      pos:
+        - -0.22170390188298716
+        - 0.09010278485223883
+        - 0.2674797649879838
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.5429960717886966
+        - -0.21782403339705528
+        - 0.8109919583427959
+      pos:
+        - -0.22100551218114406
+        - 0.08865683301851274
+        - 0.33008285407649557
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.42247593390470467
+        - -0.22071480218399267
+        - 0.879089905167969
+      pos:
+        - -0.18519601339570807
+        - 0.0967522601444034
+        - 0.385356733456542
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.30716039188640615
+        - -0.23506845712701005
+        - 0.9221688099909456
+      pos:
+        - -0.12896618966625478
+        - 0.09869724100888391
+        - 0.3871872832405385
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.18523058148032762
+        - -0.2442842760409412
+        - 0.9518481098177444
+      pos:
+        - -0.07551600536558992
+        - 0.09959139874641144
+        - 0.38805561367768737
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.05666773597128979
+        - -0.24658459819419062
+        - 0.9674630761084877
+      pos:
+        - -0.02268597194886879
+        - 0.09871598329763247
+        - 0.3873075186431154
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.08479006940942736
+        - -0.2464305363710424
+        - 0.9654442681343264
+      pos:
+        - 0.03403667787801452
+        - 0.09892286731439953
+        - 0.38755146437007104
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.225537284378957
+        - -0.24249780813240918
+        - 0.9435718024644137
+      pos:
+        - 0.09284561939644807
+        - 0.09982765936165199
+        - 0.3884347046479082
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.33967875047703705
+        - -0.23319312962714375
+        - 0.9111746872960512
+      pos:
+        - 0.14464453101118335
+        - 0.09930003222921216
+        - 0.38800317985186616
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.44100355132041075
+        - -0.2176635247904917
+        - 0.8707114663874392
+      pos:
+        - 0.1951688232090929
+        - 0.09632832629512966
+        - 0.3853386933975811
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.5348688776339479
+        - -0.23027455590347778
+        - 0.8129507442902411
+      pos:
+        - 0.22867636677369663
+        - 0.0984509493941279
+        - 0.34756672213314377
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.6069469096541388
+        - -0.2571250758414189
+        - 0.7519987661125751
+      pos:
+        - 0.22696920649757946
+        - 0.09615251928313173
+        - 0.28121168510272215
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.6806263591899825
+        - -0.28841317251680426
+        - 0.6734727916512895
+      pos:
+        - 0.22715779883405585
+        - 0.09625736726040734
+        - 0.22477030879056978
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7616771922052981
+        - -0.32154550097732293
+        - 0.5625445277269132
+      pos:
+        - 0.22688425056926476
+        - 0.0957802212797455
+        - 0.16756769782698228
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8338014779018813
+        - -0.35634561569889744
+        - 0.421654950902764
+      pos:
+        - 0.22846129868724696
+        - 0.09763856781464819
+        - 0.11553330167218628
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8931137885989767
+        - -0.3843162898032879
+        - 0.23377072102001512
+      pos:
+        - 0.2294312918395014
+        - 0.09872670646239932
+        - 0.0600531748614134
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.9179807134181489
+        - -0.39608221754256095
+        - 0.020743354089294553
+      pos:
+        - 0.22991005314947444
+        - 0.09919956090111416
+        - 0.005195213332325976
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8962482461698122
+        - -0.3842898145505847
+        - -0.22149586829151616
+      pos:
+        - 0.2293354857353158
+        - 0.09833357181978186
+        - -0.056677223927728504
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8308324966171264
+        - -0.3533434763997523
+        - -0.4299601728656857
+      pos:
+        - 0.22854549125731882
+        - 0.09719776095080292
+        - -0.11827348993783239
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7525849519007407
+        - -0.31885007436417756
+        - -0.5761514733561984
+      pos:
+        - 0.22826038648434865
+        - 0.09670780822964106
+        - -0.1747477911293104
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.6705762953271236
+        - -0.28627858313357885
+        - -0.6843770926794531
+      pos:
+        - 0.2293205118794539
+        - 0.0979001967140691
+        - -0.23404004332611347
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5963548905043096
+        - -0.25589181252205057
+        - -0.7608417870068472
+      pos:
+        - 0.23009348972815746
+        - 0.09873154571813904
+        - -0.2935579881894972
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.4910306788651181
+        - -0.24601605235767532
+        - -0.8356823406029391
+      pos:
+        - 0.1955097806946286
+        - 0.09795425523100487
+        - -0.3327369921555039
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.3497930879645788
+        - -0.2670413015658973
+        - -0.8979608782514947
+      pos:
+        - 0.13120870231081178
+        - 0.10016819613485217
+        - -0.3368285012343821
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.18370373053393896
+        - -0.28066786347507755
+        - -0.9420607675730103
+      pos:
+        - 0.06599625596340003
+        - 0.10083098533036994
+        - -0.33843887311988596
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.004324907498101507
+        - -0.28568314464041145
+        - -0.9583143722409146
+      pos:
+        - -0.0015331337974945347
+        - 0.10127164213685447
+        - -0.3397122720780146
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.18544875241158493
+        - -0.28091408993005174
+        - -0.9416453867076275
+      pos:
+        - -0.06715500372914557
+        - 0.10172506696056738
+        - -0.3409901583782944
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.3382787503596877
+        - -0.2681652648221778
+        - -0.9020282023295829
+      pos:
+        - -0.1278386058470079
+        - 0.1013420841687791
+        - -0.34088463345062214
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.4768011799101673
+        - -0.2506316863533488
+        - -0.842522636272729
+      pos:
+        - -0.19362137417878494
+        - 0.10177754076368806
+        - -0.34213503968801695
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.586779258108813
+        - -0.3134987659228341
+        - -0.7465980351019758
+      pos:
+        - -0.25202206890752077
+        - 0.13464792167751738
+        - -0.3206643364578461
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.6520309328888353
+        - -0.3513681925187207
+        - -0.6718601460439829
+      pos:
+        - -0.25420051206336636
+        - 0.1369842594205053
+        - -0.2619311209710139
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.717208978743412
+        - -0.38671099944195136
+        - -0.5797118971699985
+      pos:
+        - -0.25492822974816187
+        - 0.1374544288118125
+        - -0.20605560176954718
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.7777533419140189
+        - -0.4177379547815881
+        - -0.4696751433453457
+      pos:
+        - -0.25481888566614463
+        - 0.1368653972941288
+        - -0.15388181599813514
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8326866906749235
+        - -0.44932762187022907
+        - -0.32363183310250665
+      pos:
+        - -0.25626264716540037
+        - 0.1382823661222073
+        - -0.09959898625330219
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8678285834421455
+        - -0.4705530387955739
+        - -0.1595411778853666
+      pos:
+        - -0.25772779608025154
+        - 0.13974487582170453
+        - -0.0473805506582327
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8792586489782953
+        - -0.4762152386972496
+        - 0.011102910851869707
+      pos:
+        - -0.25809079378625555
+        - 0.1397845436167194
+        - 0.0032590627097349376
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8601921662065224
+        - -0.4655997318049316
+        - 0.20805366360654745
+      pos:
+        - -0.25864309151911336
+        - 0.13999680394158004
+        - 0.06255769916434639
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.8164807697829202
+        - -0.4427374783485533
+        - 0.37059773048448974
+      pos:
+        - -0.25959674736189964
+        - 0.14076658455171148
+        - 0.11783004447129107
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.7518149920802734
+        - -0.40444186864490855
+        - 0.5207696156366585
+      pos:
+        - -0.2588264106740792
+        - 0.13923669824411017
+        - 0.17928470677392977
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.6780185129840266
+        - -0.3637936947750584
+        - 0.6387057567400195
+      pos:
+        - -0.2590769018118757
+        - 0.13900880512275587
+        - 0.2440551481365114
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.607524001086031
+        - -0.3258057569229139
+        - 0.724406789628802
+      pos:
+        - -0.25971821005815565
+        - 0.13928287255054325
+        - 0.30968592914854204
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.5464873300647093
+        - -0.29314149461747824
+        - 0.7844868782919039
+      pos:
+        - -0.2604777270287921
+        - 0.1397229652272858
+        - 0.373917834320499
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      offset: 0
+    - dir:
+        - 0.4275852785256017
+        - -0.29014589382789197
+        - 0.8561461264778327
+      pos:
+        - -0.2147887543728184
+        - 0.14574887923310373
+        - 0.4300675661738824
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.3169694424413522
+        - -0.3037449082428243
+        - 0.8984817211690935
+      pos:
+        - -0.15158506638998015
+        - 0.14526066527730402
+        - 0.4296830959621625
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.1937160457153261
+        - -0.3150907628559041
+        - 0.9290812153925523
+      pos:
+        - -0.08973596776975595
+        - 0.14596093181530503
+        - 0.43038253074022803
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - 0.0641362630099888
+        - -0.31970421204805494
+        - 0.9453442529395552
+      pos:
+        - -0.02916798322721717
+        - 0.1453955478078918
+        - 0.42992503803024285
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.07851403648042053
+        - -0.32091096916582623
+        - 0.9438494032125047
+      pos:
+        - 0.035856808263627624
+        - 0.14655778261946156
+        - 0.4310493842609895
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.20594672410218473
+        - -0.31492003542995584
+        - 0.9265048937357935
+      pos:
+        - 0.09582106835592369
+        - 0.1465232058103108
+        - 0.4310759937638333
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.3326510257973711
+        - -0.3049835304027458
+        - 0.8923723108764828
+      pos:
+        - 0.16112522408857077
+        - 0.14772399863092261
+        - 0.4322358189509763
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.44323228618057986
+        - -0.2860370580698312
+        - 0.8495457267845519
+      pos:
+        - 0.2240474325454398
+        - 0.14458754578922295
+        - 0.4294329290770158
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      offset: 0
+    - dir:
+        - -0.5398118476319694
+        - -0.29656826513826245
+        - 0.7878137046720124
+      pos:
+        - 0.26703270906087617
+        - 0.14670561161033757
+        - 0.3897136172848119
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5920579807289963
+        - -0.32672690084897593
+        - 0.7366932059661789
+      pos:
+        - 0.26815157010043666
+        - 0.1479793099804621
+        - 0.333658942691591
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.651125767851015
+        - -0.35880055285545465
+        - 0.6688029588085315
+      pos:
+        - 0.2680394783822142
+        - 0.14770220712971624
+        - 0.2753163905817628
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7070621814886899
+        - -0.38868243414428005
+        - 0.590752940658049
+      pos:
+        - 0.26770473261127314
+        - 0.1471612113155534
+        - 0.22366824610137348
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7608934351691539
+        - -0.4178931785868049
+        - 0.49639346450885263
+      pos:
+        - 0.2676771975061545
+        - 0.1470120121041486
+        - 0.17462788519204592
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8093409354764394
+        - -0.44734801640369537
+        - 0.3805877065563222
+      pos:
+        - 0.26917677743022006
+        - 0.14878241315504714
+        - 0.1265787604331195
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8479507447617638
+        - -0.4690744756726709
+        - 0.2468778457666439
+      pos:
+        - 0.2695112006806104
+        - 0.14908982146443883
+        - 0.07846722825003766
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8717501660217946
+        - -0.4810845798131937
+        - 0.09278617950393536
+      pos:
+        - 0.26916903485920773
+        - 0.14854378821044859
+        - 0.02864945411977482
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8739095845247357
+        - -0.47787677930117717
+        - -0.08897090468539715
+      pos:
+        - 0.26744119937398514
+        - 0.14624389212848435
+        - -0.027227628440980478
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.8491659631776814
+        - -0.4637738252606386
+        - -0.2526479882833726
+      pos:
+        - 0.2673594165792479
+        - 0.1460189229469452
+        - -0.07954607423805715
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7978388893385872
+        - -0.4364367722518194
+        - -0.41590389573239506
+      pos:
+        - 0.26788659724602737
+        - 0.14654031458469388
+        - -0.13964608757224356
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.7374219809816158
+        - -0.40404362945018496
+        - -0.5412555472841558
+      pos:
+        - 0.2684130638702469
+        - 0.14706720346688792
+        - -0.197010753042537
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.661736520600157
+        - -0.3569741804673308
+        - -0.6592982722438119
+      pos:
+        - 0.26546087263381746
+        - 0.14320303399403614
+        - -0.2644827498973146
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.5778543803745804
+        - -0.31038357441024733
+        - -0.7548154422229505
+      pos:
+        - 0.264868919802685
+        - 0.14226934132652452
+        - -0.34598189028588977
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      offset: 0
+    - dir:
+        - -0.46871736317913437
+        - -0.2962409400743482
+        - -0.8321930899005746
+      pos:
+        - 0.23020813279173014
+        - 0.14549722077378852
+        - -0.40872737474198195
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.35678480326497547
+        - -0.3131505511659991
+        - -0.8801371123089878
+      pos:
+        - 0.16608480280052887
+        - 0.14577287782813902
+        - -0.40970746903337907
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.20772285879021696
+        - -0.32972990662866764
+        - -0.9209394131052647
+      pos:
+        - 0.09351449483816436
+        - 0.14844069560276607
+        - -0.414596566283876
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - -0.07744244760048943
+        - -0.3349127775843647
+        - -0.9390612859235393
+      pos:
+        - 0.03410870352439786
+        - 0.14750877575679183
+        - -0.4135995695544543
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.04684131179912474
+        - -0.3343035560359976
+        - -0.9413007085573791
+      pos:
+        - -0.020519858379281573
+        - 0.146448964857493
+        - -0.4123573078983611
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.19001152783414826
+        - -0.3281231747830886
+        - -0.9253274023070966
+      pos:
+        - -0.08475940944240073
+        - 0.1463675748308047
+        - -0.4127655045691656
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.32679556222795436
+        - -0.3148422219395146
+        - -0.8911111242669484
+      pos:
+        - -0.15112174107581297
+        - 0.14559409686992064
+        - -0.4120810688895178
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+    - dir:
+        - 0.45620995242874274
+        - -0.2973553258899489
+        - -0.8387206265913855
+      pos:
+        - -0.22595513020450642
+        - 0.1472764042537221
+        - -0.4154079221151199
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      offset: 0
+  mode: ellipsoid
+  tool: gaussian
+  flipUpDown: true
+  flipLeftRight: true
+  reversed: false
+  ledSize: 0.007
+  maxSegmentLength: 0.1
+  gaussians:
+    - id: gaussian-3vqh31-mrxjf68h
+      pos:
+        - -0.0008069105977498436
+        - -0.09590707556975553
+        - -0.023338263848145056
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      amplitude: 0.05
+      width: 0.035
+      height: 0.05
+      rotationDeg: 0
+    - id: gaussian-owvf5f-mrxjg3n6
+      pos:
+        - 0.0010609839695583378
+        - 0.03964197884311649
+        - -0.24080738772054155
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      amplitude: 0.065
+      width: 0.075
+      height: 0.07
+      rotationDeg: 0
+    - id: gaussian-8xtgw7-mrxjgp7e
+      pos:
+        - 0.027626611951496294
+        - 0.14315235983738422
+        - -0.4066641841615341
+      normal:
+        - 0.004436198863865576
+        - -0.8486538641911383
+        - -0.5289299943594512
+      amplitude: 0.05
+      width: 0.14
+      height: 0.05
+      rotationDeg: 0
+    - id: gaussian-s3rd1w-mrxjhrqi
+      pos:
+        - 0.26243282816765545
+        - 0.14002796266257578
+        - 0.0035962428640240462
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      amplitude: 0.03
+      width: 0.305
+      height: 0.03
+      rotationDeg: 0
+    - id: gaussian-zaga1g-mrxjinih
+      pos:
+        - 0.14371708935681915
+        - -0.008827797703936324
+        - 0.08535320033344096
+      normal:
+        - 0.7822018865098042
+        - -0.6230233446541876
+        - 0.0014562817078796403
+      amplitude: 0.02
+      width: 0.11
+      height: 0.055
+      rotationDeg: 0
+    - id: gaussian-yt93xv-mrxjje9g
+      pos:
+        - -0.25601879142676676
+        - 0.13709081183709343
+        - 0.0024926110193974615
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      amplitude: 0.05
+      width: 0.265
+      height: 0.04
+      rotationDeg: 0
+    - id: gaussian-rqj2tu-mrxjjwcv
+      pos:
+        - -0.17401184855408108
+        - 0.02992380257151661
+        - 0.0367584437955788
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      amplitude: 0.055
+      width: 0.115
+      height: 0.035
+      rotationDeg: 0
+    - id: gaussian-zcb1t2-mrxjkjls
+      pos:
+        - -0.07907738269535058
+        - -0.0943916012847067
+        - 0.10618036971879374
+      normal:
+        - -0.7933431646296889
+        - -0.608752395253701
+        - -0.005210029580751303
+      amplitude: 0.03
+      width: 0.05
+      height: 0.03
+      rotationDeg: 0
+    - id: gaussian-zxay0t-mrxjl207
+      pos:
+        - -0.006522141671806869
+        - 0.03014363976846879
+        - 0.32470876925726344
+      normal:
+        - -0.0007165117991243403
+        - -0.6742979786352307
+        - 0.7384590189166111
+      amplitude: 0.04
+      width: 0.08
+      height: 0.095
+      rotationDeg: 0
+mesh:
+  id: mesh-mrw5b7vp-vrvd7b
+  name: pyramid-walled.glb
+  scale: 1
+  yawDeg: 0
+  tiltDeg: 0
+  offsetY: 0
+ui:
+  showMaster: true
+  showBreath: true
+  showLightning: true
+  showBreathFilter: true
+  showTimeOfDay: true
+  showCloud: false
+  showStream: false

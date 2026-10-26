@@ -183,15 +183,16 @@ export function computeSkyLighting(sky: SkyParams): SkyLighting {
   const twilight = Math.exp(-Math.pow(solar / 0.22, 2));
   const twilightSun = twilight * sunVisible;
   const twilightMoon = twilight * moonVisible;
-  const sunsetBoost = 1 + twilight * 0.55;
 
   const ambientBase = 0.08 + 0.22 * clamp01((solar + 0.2) / 1.2);
   const sunBase = 1.1 * sunVisible + 0.35 * twilightSun;
   const moonBase = 0.75 * moonVisible + 0.2 * twilightMoon;
 
+  // Clamp the altitude envelope, then scale: clamping after scaling made
+  // Sun/Moon scale above ~0.9 / ~1.05 do nothing.
   const ambientIntensity = ambientBase * sky.ambientScale * vis;
-  const sunIntensity = clamp01(sunBase * sky.sunScale) * 1.6 * vis;
-  const moonIntensity = clamp01(moonBase * sky.moonScale) * 0.95 * vis;
+  const sunIntensity = clamp01(sunBase) * Math.max(0, sky.sunScale) * 1.6 * vis;
+  const moonIntensity = clamp01(moonBase) * Math.max(0, sky.moonScale) * 0.95 * vis;
 
   const ambientColorFinal = saturateHex(rawAmbientColor, 1.08 + twilight * 0.25);
   // Preserve user-selected sun/moon hue in LED output; intensity already

@@ -499,6 +499,12 @@ export interface SkyParams {
   timeHours: number;
   /** How many real-time seconds one full 24h sky cycle takes. */
   cycleSeconds: number;
+  /**
+   * While true, `setSky` ignores `cycleSeconds` so arrangements synced to
+   * the cycle can't be knocked out by a stray edit or preset load. Only
+   * `setCycleLocked` changes it.
+   */
+  cycleLocked: boolean;
   /** Global intensity scale for the sky ambient component. */
   ambientScale: number;
   /** Global intensity scale for sun contribution. */
@@ -883,6 +889,8 @@ export interface PadNote {
 }
 
 export type PadWaveform = "sine" | "sawtooth" | "square" | "triangle";
+/** Selectable sound generator. Bellows engines run in an AudioWorklet. */
+export type PadEngineType = "tone" | "bellows-analog" | "bellows-motion";
 export type PadFilterSlope = 12 | 24;
 export type PadDelaySync = "off" | "1/4" | "1/8" | "1/8d" | "1/8t" | "1/16";
 export const PAD_DELAY_SYNCS: PadDelaySync[] = ["off", "1/4", "1/8", "1/8d", "1/8t", "1/16"];
@@ -937,6 +945,8 @@ function resolvePadEq(input: unknown): PadEq {
  */
 export interface PadParams {
   enabled: boolean;
+  /** Sound generator; shared timing, notes, and master controls stay unchanged. */
+  engine: PadEngineType;
   /** Master output gain, [0, 1]. */
   master: number;
   waveform: PadWaveform;
@@ -1796,6 +1806,7 @@ export interface SimState {
   setAmbient: (a: Partial<AmbientLightParams>) => void;
   setDirectional: (d: Partial<DirectionalLightParams>) => void;
   setSky: (sk: Partial<SkyParams>) => void;
+  setCycleLocked: (locked: boolean) => void;
   setWled: (w: Partial<WledParams>) => void;
   setBreath: (b: BreathPatch) => void;
   setLightning: (l: Partial<LightningParams>) => void;
@@ -2116,6 +2127,7 @@ const DEFAULTS = {
     autoPlay: true,
     timeHours: 12,
     cycleSeconds: 180,
+    cycleLocked: false,
     ambientScale: 1,
     sunScale: 1,
     moonScale: 1,
@@ -2325,6 +2337,7 @@ const DEFAULTS = {
     // Warm-pad defaults: slow attack + release, saw + subtle unison spread,
     // moderately closed low-pass with a gentle envelope, slow chorus, and
     // a comfortable amount of reverb.
+    engine: "tone",
     master: 0.35,
     waveform: "sawtooth",
     unisonCount: 3,
@@ -2762,6 +2775,10 @@ function resolvePadParams(
   const resolved: PadParams = {
     enabled:
       typeof saved.enabled === "boolean" ? saved.enabled : DEFAULTS.pad.enabled,
+    engine:
+      saved.engine === "bellows-analog" || saved.engine === "bellows-motion"
+        ? saved.engine
+        : "tone",
     master: pick("master"),
     waveform: pick("waveform"),
     unisonCount: pick("unisonCount"),
@@ -4227,7 +4244,14 @@ export const useSimStore = create<SimState>((set) => ({
   setAmbient: (a) => set((s) => ({ ambient: { ...s.ambient, ...a } })),
   setDirectional: (d) =>
     set((s) => ({ directional: { ...s.directional, ...d } })),
-  setSky: (sk) => set((s) => ({ sky: { ...s.sky, ...sk } })),
+  setSky: (sk) =>
+    set((s) => {
+      const { cycleLocked: _ignored, ...patch } = sk;
+      if (s.sky.cycleLocked) delete patch.cycleSeconds;
+      return { sky: { ...s.sky, ...patch } };
+    }),
+  setCycleLocked: (locked) =>
+    set((s) => ({ sky: { ...s.sky, cycleLocked: locked } })),
   setWled: (w) => set((s) => ({ wled: { ...s.wled, ...w } })),
   setBreath: (b) =>
     set((s) => ({
