@@ -60,9 +60,29 @@ export interface Snapshot {
   ui?: UiParams;
 }
 
+export function audioContentCount(snap: Partial<Snapshot>): number {
+  return (
+    (snap.drone?.notes?.length ?? 0) +
+    (snap.pad?.notes?.length ?? 0) +
+    (snap.pad?.keyframes?.length ?? 0) +
+    (snap.samples?.library?.length ?? 0) +
+    (snap.samples?.clips?.length ?? 0)
+  );
+}
+
 export function saveSnapshot(snap: Omit<Snapshot, "version">): void {
   const payload: Snapshot = { version: SCHEMA_VERSION, ...snap };
   try {
+    const existingRaw = localStorage.getItem(STORAGE_KEY);
+    if (existingRaw) {
+      const existing = JSON.parse(existingRaw) as Partial<Snapshot>;
+      if (audioContentCount(existing) > 0 && audioContentCount(payload) === 0) {
+        console.warn(
+          "[persistence] skipped empty audio snapshot to protect existing notes/samples",
+        );
+        return;
+      }
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (err) {
     console.warn("[persistence] saveSnapshot failed", err);

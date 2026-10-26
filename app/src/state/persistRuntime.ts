@@ -4,11 +4,16 @@
  * (File System Access handle in IndexedDB).
  */
 
-import { currentSnapshot, useSimStore } from "../state";
-import { saveSnapshot } from "./persistence";
-import { autosaveBoundFileIfPermitted } from "./fileIO";
+import defaultConfigYaml from "../../../cloud-led-config.yaml?raw";
+import { applySnapshot, currentSnapshot, useSimStore } from "../state";
+import { audioContentCount, loadSnapshot, saveSnapshot } from "./persistence";
+import {
+  autosaveBoundFileIfPermitted,
+  yamlToSnapshot,
+} from "./fileIO";
 
 const AUTOSAVE_MS = 400;
+const REPO_DEFAULT_APPLIED_KEY = "cloudLeds.repoDefaultApplied";
 
 let started = false;
 let timer: ReturnType<typeof setTimeout> | null = null;
@@ -56,7 +61,19 @@ export function startPersistence(): void {
     if (document.visibilityState === "hidden") flush();
   });
 
-  // Do not silently reload the previously bound YAML here. The browser
-  // snapshot is the live autosave and may be newer; files remain available
-  // through the explicit Load controls.
+  // The committed cloud-led-config.yaml is the repo default. Apply it when
+  // the browser save has less arrangement data than that file, once per
+  // file revision. A richer browser save is left alone.
+  const browserSnap = loadSnapshot();
+  const defaultSnap = yamlToSnapshot(defaultConfigYaml);
+  const defaultId = String(defaultConfigYaml.length);
+  const appliedId = localStorage.getItem(REPO_DEFAULT_APPLIED_KEY);
+  if (
+    appliedId !== defaultId &&
+    audioContentCount(browserSnap ?? {}) < audioContentCount(defaultSnap)
+  ) {
+    applySnapshot(defaultSnap);
+    saveSnapshot(currentSnapshot());
+    localStorage.setItem(REPO_DEFAULT_APPLIED_KEY, defaultId);
+  }
 }
