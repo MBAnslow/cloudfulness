@@ -63,22 +63,39 @@ export interface ShadeLightHemisphere {
   intensity: number;
 }
 
+/**
+ * Backlight on the cloud outline when this light is behind it.
+ * Direction is the sun or moon, not the camera. Width is how thick
+ * the silhouette band is; it does not fill the body of the cloud.
+ */
+export interface ShadeLightRim {
+  type: "rim";
+  /** Unit direction from the LED toward the sun or moon. */
+  direction: Vec3;
+  color: Vec3;
+  intensity: number;
+  width: number;
+  /** Optional per-LED occlusion. Buried LEDs keep their shadow. */
+  transmission?: Float32Array;
+}
+
 export type ShadeLight =
   | ShadeLightAmbient
   | ShadeLightDirectional
   | ShadeLightPoint
-  | ShadeLightHemisphere;
+  | ShadeLightHemisphere
+  | ShadeLightRim;
 
 /**
  * Cosine exponent at `spread = 0` — the tightest the spot beam can get.
  * Mapped exponentially with `N(β) = NARROW_EXPONENT^(1 − β)` so the
  * middle of the slider feels like a moderate spot rather than already
  * extreme. Half-angles (where direct = 0.5):
- *   N =   1 (β = 1)   → 60°    (linear Lambert, broad)
- *   N =  ≈11 (β = 0.5) → ~23°   (clearly focused but still wide)
- *   N = 128 (β = 0)   → ~6°    (laser-tight spotlight)
+ *   N =  1 (β = 1) → 60°  (linear Lambert, broad)
+ *   N = ~2.4 (β = 0.5) → wide, gradual
+ *   N =  6 (β = 0) → a soft directional lobe, not a few-degree spike
  */
-const NARROW_EXPONENT = 24;
+const NARROW_EXPONENT = 6;
 
 /**
  * Per-LED irradiance from a single light, parameterised by the light's
@@ -121,12 +138,14 @@ export function sensorAngularResponse(
 ): number {
   const cPos = c > 0 ? c : 0;
   const n = spread >= 1 ? 1 : Math.pow(NARROW_EXPONENT, 1 - spread);
-  // Keep emitted energy roughly stable as spread narrows: a tighter lobe
-  // should redistribute where light lands, not globally dim the source.
-  const energyNorm = (n + 1) * 0.5;
-  const direct = (n === 1 ? cPos : Math.pow(cPos, n)) * energyNorm;
+  // No energy boost: boosting then clamping flattens the lobe into a
+  // full-bright cap, so a few degrees of sun motion snaps an LED on.
+  const direct = n === 1 ? cPos : Math.pow(cPos, n);
+  // Roll off through the terminator instead of ending on a hard edge.
+  const toe = c <= -0.35 ? 0 : c >= 0.45 ? 1 : (c + 0.35) / 0.8;
+  const toeSmooth = toe * toe * (3 - 2 * toe);
   const wrap = (1 + c) * 0.5 - cPos;
-  const v = direct + spread * (1 - alpha) * wrap;
+  const v = direct * toeSmooth + spread * (1 - alpha) * wrap;
   return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
@@ -184,8 +203,26 @@ export function spotConeAttenuation(
     0,
     Math.min(1, (cosine - outer) / Math.max(1e-6, 1 - outer)),
   );
-  const hotspot = Math.pow(radial, 1 + focus * 15);
+  const hotspot = Math.pow(radial, 1 + focus * 3);
   return edge * ((1 - focus) + focus * hotspot);
+}
+
+/**
+ * Backlight around the cloud's outline, including the crown.
+ * `edge` is 0 at the centre of the cloud (as seen from the light) and 1
+ * on the silhouette. Width thickens that band. `ndl` only drops LEDs
+ * that face the light directly, so the top still catches a low sun.
+ */
+export function rimSilhouette(edge: number, width: number, ndl: number): number {
+  const w = width < 0 ? 0 : width > 1 ? 1 : width;
+  const band = 0.1 + w * 0.45;
+  const start = 1 - band;
+  const t = edge <= start ? 0 : edge >= 1 ? 1 : (edge - start) / Math.max(1e-4, band);
+  const silhouette = t * t * (3 - 2 * t);
+  const facing = ndl <= 0.25 ? 1 : ndl >= 0.9 ? 0 : (0.9 - ndl) / 0.65;
+  const keep = facing * facing * (3 - 2 * facing);
+  const v = silhouette * keep;
+  return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
 function clamp01(v: number) {
@@ -193,13 +230,9 @@ function clamp01(v: number) {
 }
 
 /**
- * Compress highlights while preserving hue/chroma.
- *
- * Per-channel clamping (`min(1, c)`) tends to bleach warm sunsets toward
- * white whenever multiple lights stack above 1.0. We instead normalize by
- * the brightest channel first (so RGB ratios stay intact), then apply a
- * gentle Reinhard roll-off. This keeps oranges/reds visibly saturated at
- * high brightness.
+ * Keep the shaded RGB ratio. A per-channel curve shifts a chosen swatch
+ * (orange suns pick up green and blue). Scale every channel together,
+ * and only when one of them would clip.
  */
 function toneMapPreserveHue(
   r: number,
@@ -208,15 +241,9 @@ function toneMapPreserveHue(
 ): [number, number, number] {
   const peak = Math.max(r, g, b);
   if (peak <= 0) return [0, 0, 0];
-  const scale = peak > 1 ? 1 / peak : 1;
-  const rn = r * scale;
-  const gn = g * scale;
-  const bn = b * scale;
-  const exposure = 1.35;
-  const rr = 1 - Math.exp(-rn * exposure);
-  const gg = 1 - Math.exp(-gn * exposure);
-  const bb = 1 - Math.exp(-bn * exposure);
-  return [clamp01(rr), clamp01(gg), clamp01(bb)];
+  if (peak <= 1) return [clamp01(r), clamp01(g), clamp01(b)];
+  const scale = 1 / peak;
+  return [r * scale, g * scale, b * scale];
 }
 
 /**
@@ -241,11 +268,108 @@ export function shadeLeds(
     hemisphereAverage?: boolean;
     hemisphereFocusExponent?: number;
     ambientDucking?: number;
+    /**
+     * 0 leaves ambient spatially flat (older configs). 1 darkens fill on
+     * downward-facing and occluded LEDs so folds stay darker than open shade.
+     */
+    ambientOcclusion?: number;
+    /** Lowest fraction of ambient fill kept in a fully occluded LED. */
+    ambientShadowFloor?: number;
+    /** Per-LED sky openness, typically max(sun, moon) transmission. */
+    skyExposure?: Float32Array;
   },
 ): void {
   const hemisphereAverage = options?.hemisphereAverage ?? false;
   const focusExp = Math.max(0, options?.hemisphereFocusExponent ?? 0);
+  // High focus values used to collapse the average onto one ray, so an
+  // LED flipped as soon as that ray left the sun. Keep a real patch.
+  const sampleFocus = focusExp <= 0 ? 0 : focusExp / (1 + focusExp / 3);
   const ambientDucking = clamp01(options?.ambientDucking ?? 0);
+  const ambientOcclusion = clamp01(options?.ambientOcclusion ?? 0);
+  const ambientShadowFloor = clamp01(options?.ambientShadowFloor ?? 0);
+  const skyExposure = options?.skyExposure;
+  let rimCx = 0;
+  let rimCy = 0;
+  let rimCz = 0;
+  let rimCount = 0;
+  const rimMaxU = new Float32Array(lights.length);
+  const rimMaxV = new Float32Array(lights.length);
+  const rimLx = new Float32Array(lights.length);
+  const rimLy = new Float32Array(lights.length);
+  const rimLz = new Float32Array(lights.length);
+  const rimTx = new Float32Array(lights.length);
+  const rimTy = new Float32Array(lights.length);
+  const rimTz = new Float32Array(lights.length);
+  const rimBx = new Float32Array(lights.length);
+  const rimBy = new Float32Array(lights.length);
+  const rimBz = new Float32Array(lights.length);
+  let anyRim = false;
+  for (let li = 0; li < lights.length; li++) {
+    const L = lights[li];
+    if (L.type !== "rim") continue;
+    anyRim = true;
+    const len = Math.hypot(L.direction[0], L.direction[1], L.direction[2]) || 1;
+    const lx = L.direction[0] / len;
+    const ly = L.direction[1] / len;
+    const lz = L.direction[2] / len;
+    rimLx[li] = lx;
+    rimLy[li] = ly;
+    rimLz[li] = lz;
+    // Axes across the cloud as the light sees it. One of them follows
+    // height, so the crown is part of the outline and not just the sides.
+    const ax = Math.abs(ly) > 0.85 ? 1 : 0;
+    const ay = Math.abs(ly) > 0.85 ? 0 : 1;
+    let tx = ay * lz;
+    let ty = -ax * lz;
+    let tz = ax * ly - ay * lx;
+    const tl = Math.hypot(tx, ty, tz) || 1;
+    tx /= tl;
+    ty /= tl;
+    tz /= tl;
+    rimTx[li] = tx;
+    rimTy[li] = ty;
+    rimTz[li] = tz;
+    rimBx[li] = ly * tz - lz * ty;
+    rimBy[li] = lz * tx - lx * tz;
+    rimBz[li] = lx * ty - ly * tx;
+  }
+  if (anyRim && n > 0) {
+    for (let i = 0; i < n; i++) {
+      const i3 = i * 3;
+      rimCx += positions[i3];
+      rimCy += positions[i3 + 1];
+      rimCz += positions[i3 + 2];
+      rimCount++;
+    }
+    if (rimCount > 0) {
+      rimCx /= rimCount;
+      rimCy /= rimCount;
+      rimCz /= rimCount;
+    }
+    for (let li = 0; li < lights.length; li++) {
+      if (lights[li].type !== "rim") continue;
+      const tx = rimTx[li];
+      const ty = rimTy[li];
+      const tz = rimTz[li];
+      const bx = rimBx[li];
+      const by = rimBy[li];
+      const bz = rimBz[li];
+      let maxU = 1e-4;
+      let maxV = 1e-4;
+      for (let i = 0; i < n; i++) {
+        const i3 = i * 3;
+        const dx = positions[i3] - rimCx;
+        const dy = positions[i3 + 1] - rimCy;
+        const dz = positions[i3 + 2] - rimCz;
+        const u = Math.abs(dx * tx + dy * ty + dz * tz);
+        const v = Math.abs(dx * bx + dy * by + dz * bz);
+        if (u > maxU) maxU = u;
+        if (v > maxV) maxV = v;
+      }
+      rimMaxU[li] = maxU;
+      rimMaxV[li] = maxV;
+    }
+  }
   // Deterministic, near-uniform-area local +Z hemisphere samples
   // (camera-independent). This avoids pole-biased averages.
   const HEMI_SAMPLES = buildUniformHemisphereSamples(32);
@@ -274,6 +398,9 @@ export function shadeLeds(
     let fillG = 0;
     let fillB = 0;
     let directCoverage = 0;
+    let rimR = 0;
+    let rimG = 0;
+    let rimB = 0;
 
     // Build an orthonormal basis around the sensor axis `n` when averaging.
     let tx = 1;
@@ -314,6 +441,18 @@ export function shadeLeds(
         fillR += (L.groundColor[0] * one + L.skyColor[0] * t) * L.intensity;
         fillG += (L.groundColor[1] * one + L.skyColor[1] * t) * L.intensity;
         fillB += (L.groundColor[2] * one + L.skyColor[2] * t) * L.intensity;
+      } else if (L.type === "rim") {
+        const dx = px - rimCx;
+        const dy = py - rimCy;
+        const dz = pz - rimCz;
+        const u = (dx * rimTx[li] + dy * rimTy[li] + dz * rimTz[li]) / rimMaxU[li];
+        const v = (dx * rimBx[li] + dy * rimBy[li] + dz * rimBz[li]) / rimMaxV[li];
+        const edge = Math.min(1, Math.hypot(u, v));
+        const ndl = nx * rimLx[li] + ny * rimLy[li] + nz * rimLz[li];
+        const k = L.intensity * rimSilhouette(edge, L.width, ndl);
+        rimR += L.color[0] * k;
+        rimG += L.color[1] * k;
+        rimB += L.color[2] * k;
       } else if (L.type === "directional") {
         let k: number;
         if (!hemisphereAverage) {
@@ -325,7 +464,7 @@ export function shadeLeds(
           let wsum = 0;
           for (let si = 0; si < HEMI_SAMPLES.length; si++) {
             const s = HEMI_SAMPLES[si];
-            const w = focusExp > 0 ? Math.pow(s[2], focusExp) : 1;
+            const w = sampleFocus > 0 ? Math.pow(s[2], sampleFocus) : 1;
             // local sample (x,y,z) mapped to world: x*t + y*b + z*n
             const sx = s[0] * tx + s[1] * bx + s[2] * nx;
             const sy = s[0] * ty + s[1] * by + s[2] * ny;
@@ -377,7 +516,7 @@ export function shadeLeds(
           let wsum = 0;
           for (let si = 0; si < HEMI_SAMPLES.length; si++) {
             const s = HEMI_SAMPLES[si];
-            const w = focusExp > 0 ? Math.pow(s[2], focusExp) : 1;
+            const w = sampleFocus > 0 ? Math.pow(s[2], sampleFocus) : 1;
             const sx = s[0] * tx + s[1] * bx + s[2] * nx;
             const sy = s[0] * ty + s[1] * by + s[2] * ny;
             const sz = s[0] * tz + s[1] * bz + s[2] * nz;
@@ -419,9 +558,24 @@ export function shadeLeds(
     // visibly highlighted areas while leaving fully shaded LEDs untouched.
     const duckSignal = 1 - Math.exp(-8 * directCoverage);
     const fillAmount = 1 - ambientDucking * duckSignal;
-    r += fillR * fillAmount;
-    g += fillG * fillAmount;
-    b += fillB * fillAmount;
+    // Open shade keeps the ambient colour. Downward normals and low
+    // transmission reduce it so a fold can go dark without a separate
+    // shadow colour. Occlusion 0 leaves the previous uniform fill.
+    let ambVis = 1;
+    if (ambientOcclusion > 0) {
+      const up = clamp01(ny * 0.5 + 0.5);
+      const open = skyExposure?.[i] ?? 1;
+      const cavity = (up * 0.35 + 0.65) * (0.2 + 0.8 * clamp01(open));
+      ambVis =
+        ambientShadowFloor +
+        (1 - ambientShadowFloor) * (1 - ambientOcclusion * (1 - cavity));
+    }
+    r += fillR * fillAmount * ambVis;
+    g += fillG * fillAmount * ambVis;
+    b += fillB * fillAmount * ambVis;
+    r += rimR;
+    g += rimG;
+    b += rimB;
 
     const [cr, cg, cb] = toneMapPreserveHue(r, g, b);
 

@@ -9,5 +9,10 @@ export default defineConfig({
     fs: {
       allow: [path.resolve(import.meta.dirname, "..")],
     },
+    watch: {
+      // The default config is read when the page loads. Autosave may
+      // rewrite it; that should not refresh the running app.
+      ignored: ["**/cloud-led-config.yaml", "**/recovery/**"],
+    },
   },
 });

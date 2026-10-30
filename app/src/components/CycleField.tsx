@@ -9,9 +9,11 @@ import { useSimStore } from "../state";
 export function CycleField({
   labelStyle,
   inputStyle,
+  label = "Cycle",
 }: {
   labelStyle: CSSProperties;
   inputStyle: CSSProperties;
+  label?: string;
 }) {
   const cycleSeconds = useSimStore((s) => s.sky.cycleSeconds);
   const locked = useSimStore((s) => s.sky.cycleLocked);
@@ -19,7 +21,7 @@ export function CycleField({
   const setCycleLocked = useSimStore((s) => s.setCycleLocked);
   return (
     <label style={{ ...labelStyle, fontSize: 11 }}>
-      Cycle
+      {label}
       <input
         type="number"
         min={5}
@@ -40,6 +42,12 @@ export function CycleField({
         type="button"
         onClick={(e) => {
           e.preventDefault();
+          if (locked) {
+            const ok = window.confirm(
+              "Unlock the 24h cycle length? Pads, drones, and samples are synced to it.",
+            );
+            if (!ok) return;
+          }
           setCycleLocked(!locked);
         }}
         title={

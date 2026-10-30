@@ -11,7 +11,7 @@ import {
   getSwatch,
   type SkySwatch,
 } from "../lighting/swatches";
-import { interpolateChannel } from "../lighting/skyCycle";
+import { interpolateChannel, skyBodyDirections } from "../lighting/skyCycle";
 import { ColorInput } from "./ColorInput";
 
 const HOURS = 24;
@@ -21,7 +21,6 @@ const PIN_SIZE = 20;
 const ARC_HEIGHT = 60;
 const ARC_ICON = 16;
 const ARC_ZENITH_PAD = ARC_ICON / 2 + 2;
-const TWO_PI = Math.PI * 2;
 
 function fmtTime(hour: number): string {
   const h = ((hour % HOURS) + HOURS) % HOURS;
@@ -40,7 +39,7 @@ function makeStopId(channel: SkyChannel): string {
 }
 
 function sunAltitude(hour: number): number {
-  return Math.sin(((hour - 6) / HOURS) * TWO_PI);
+  return Math.sin((skyBodyDirections(hour).sunAltitudeDeg * Math.PI) / 180);
 }
 function altitudeY(alt: number): number {
   return ARC_HEIGHT - Math.max(0, alt) * (ARC_HEIGHT - ARC_ZENITH_PAD);
@@ -48,23 +47,20 @@ function altitudeY(alt: number): number {
 
 /** Which channel's color from a swatch should apply to a given track. */
 function swatchColorFor(channel: SkyChannel, swatch: SkySwatch): string {
-  return channel === "sun"
-    ? swatch.sunColor
-    : channel === "moon"
-      ? swatch.moonColor
-      : swatch.ambientColor;
+  if (channel === "sun" || channel === "rim") return swatch.sunColor;
+  if (channel === "moon") return swatch.moonColor;
+  return swatch.ambientColor;
 }
 
 /** Field name in `SkyParams` for a channel's stop list. */
 function channelKey(channel: SkyChannel): keyof SkyParams {
-  return channel === "sun"
-    ? "sunStops"
-    : channel === "moon"
-      ? "moonStops"
-      : "ambientStops";
+  if (channel === "sun") return "sunStops";
+  if (channel === "moon") return "moonStops";
+  if (channel === "rim") return "rimStops";
+  return "ambientStops";
 }
 
-const CHANNELS: SkyChannel[] = ["sun", "moon", "ambient"];
+const CHANNELS: SkyChannel[] = ["sun", "moon", "ambient", "rim"];
 
 function ColorDot({ color, size = 10 }: { color: string; size?: number }) {
   return (
@@ -99,14 +95,14 @@ export function SkyTimeline() {
   // Selected stop no longer exists after edit/delete? Clear the selection.
   useEffect(() => {
     if (!selected) return;
-    const list = sky[channelKey(selected.channel)] as SkyChannelStop[];
+    const list = (sky[channelKey(selected.channel)] as SkyChannelStop[] | undefined) ?? [];
     if (!list.some((s) => s.id === selected.id)) setSelected(null);
-  }, [sky.sunStops, sky.moonStops, sky.ambientStops, selected]);
+  }, [sky.sunStops, sky.moonStops, sky.ambientStops, sky.rimStops, selected]);
 
   const setChannelStops = useCallback(
     (channel: SkyChannel, updater: (stops: SkyChannelStop[]) => SkyChannelStop[]) => {
       const key = channelKey(channel);
-      const list = useSimStore.getState().sky[key] as SkyChannelStop[];
+      const list = (useSimStore.getState().sky[key] as SkyChannelStop[] | undefined) ?? [];
       setSky({ [key]: updater(list) } as Partial<SkyParams>);
     },
     [setSky],
@@ -185,11 +181,15 @@ export function SkyTimeline() {
     () => interpolateChannel(sky.ambientStops, nowHour, "#0c1734"),
     [sky.ambientStops, nowHour],
   );
+  const nowRim = useMemo(
+    () => interpolateChannel(sky.rimStops ?? [], nowHour, "#ffffff"),
+    [sky.rimStops, nowHour],
+  );
 
   const selectedStop: SkyChannelStop | null = selected
-    ? ((sky[channelKey(selected.channel)] as SkyChannelStop[]).find(
+    ? ((sky[channelKey(selected.channel)] as SkyChannelStop[] | undefined) ?? []).find(
         (s) => s.id === selected.id,
-      ) ?? null)
+      ) ?? null
     : null;
 
   return (
@@ -269,6 +269,8 @@ export function SkyTimeline() {
             moon
             <ColorDot color={nowAmbient} size={9} />
             ambient
+            <ColorDot color={nowRim} size={9} />
+            rim
           </span>
         </div>
         <div style={{ opacity: 0.55, fontSize: 10 }}>
@@ -288,7 +290,7 @@ export function SkyTimeline() {
           <ChannelTrack
             key={channel}
             channel={channel}
-            stops={sky[channelKey(channel)] as SkyChannelStop[]}
+            stops={(sky[channelKey(channel)] as SkyChannelStop[] | undefined) ?? []}
             nowHour={nowHour}
             selectedId={
               selected && selected.channel === channel ? selected.id : null
@@ -854,6 +856,17 @@ function StopEditor({
         <ColorInput
           color={stop.color}
           onChange={(c) => onChange({ color: c, swatchId: CUSTOM_SWATCH_ID })}
+        />
+
+        <label style={{ opacity: 0.75 }}>intensity</label>
+        <input
+          type="range"
+          min={0}
+          max={2}
+          step={0.01}
+          value={stop.intensity ?? 1}
+          onChange={(e) => onChange({ intensity: parseFloat(e.target.value) })}
+          style={{ width: "100%" }}
         />
 
         <label style={{ opacity: 0.75 }}>swatch</label>

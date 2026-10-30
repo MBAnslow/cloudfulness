@@ -35,6 +35,7 @@ export function startPersistence(): void {
       state.sky.sunStops !== previous.sky.sunStops ||
       state.sky.moonStops !== previous.sky.moonStops ||
       state.sky.ambientStops !== previous.sky.ambientStops ||
+      state.sky.rimStops !== previous.sky.rimStops ||
       state.ambient !== previous.ambient ||
       state.strand.colorProfile !== previous.strand.colorProfile;
     if (arrangementChanged || colorAuthoringChanged) {

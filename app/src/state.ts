@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import { CUSTOM_SWATCH_ID, getSwatch } from "./lighting/swatches";
+import { buildAtmosphericChannelStops } from "./lighting/atmospherePalette";
 import {
   DEFAULT_LED_COLOR_PROFILE,
+  resolveLedColorProfile,
   type LedColorProfile,
 } from "./lighting/ledColor";
 import { loadSnapshot, type Snapshot } from "./state/persistence";
@@ -465,7 +467,7 @@ export interface DirectionalLightParams {
 }
 
 /** Which sky channel a stop belongs to. */
-export type SkyChannel = "sun" | "moon" | "ambient";
+export type SkyChannel = "sun" | "moon" | "ambient" | "rim";
 
 /**
  * A single stop on one sky channel's timeline. Pins a single color
@@ -486,6 +488,12 @@ export interface SkyChannelStop {
   /** Preset id from `SKY_SWATCHES`, or "custom". */
   swatchId: string;
   color: string;
+  /**
+   * Optional brightness at this hour, independent of the colour.
+   * Missing on older stops: sun and moon keep the altitude envelope,
+   * and ambient keeps its altitude floor.
+   */
+  intensity?: number;
 }
 
 export interface SkyParams {
@@ -550,6 +558,24 @@ export interface SkyParams {
   moonStops: SkyChannelStop[];
   /** Draggable ambient-color timeline (independent from sun and moon). */
   ambientStops: SkyChannelStop[];
+  /**
+   * Grazing-edge colour across the day. Ignored while `rimEnabled` is false,
+   * which is the default so older configs keep their previous look.
+   */
+  rimStops: SkyChannelStop[];
+  /** Optional rim on sun- or moon-facing edges. Off until configured. */
+  rimEnabled: boolean;
+  /** Scales the rim stop intensity. */
+  rimScale: number;
+  /** How far onto the lit face the grazing band reaches. 0 is a hairline. */
+  rimWidth: number;
+  /**
+   * Darkens ambient fill on downward and occluded LEDs. 0 keeps the
+   * previous uniform fill.
+   */
+  ambientOcclusion: number;
+  /** Fraction of ambient fill kept in the darkest fold. 0 can go fully dark. */
+  ambientShadowFloor: number;
 }
 
 /** Legacy single-list stop, kept only for one-shot snapshot migration. */
@@ -1976,6 +2002,12 @@ export interface MappingParams {
    * bead in the strand.
    */
   maxSegmentLength: number;
+  /**
+   * When false, the mapping view shows hand-placed LEDs only: offsets and
+   * domes are not drawn, do not move beads, and their controls are hidden.
+   * The saved offsets and domes are left intact.
+   */
+  showOffsetsAndDomes: boolean;
   /** Show the 3D smooth-dome displacement surfaces in the mapping view. */
   showBumpSurfaces: boolean;
   /** Show mapped LEDs as full-size outward sensor hemispheres. */
@@ -2068,6 +2100,7 @@ function seedColorFromSwatch(channel: SkyChannel, swatchId: string): string {
 }
 
 export function buildDefaultChannelStops(channel: SkyChannel): SkyChannelStop[] {
+  if (channel === "rim") return buildAtmosphericChannelStops("rim");
   const seed =
     channel === "sun" ? SUN_SEED : channel === "moon" ? MOON_SEED : AMBIENT_SEED;
   return seed.map(([hour, swatchId], i) => ({
@@ -2127,7 +2160,7 @@ const DEFAULTS = {
     autoPlay: true,
     timeHours: 12,
     cycleSeconds: 180,
-    cycleLocked: false,
+    cycleLocked: true,
     ambientScale: 1,
     sunScale: 1,
     moonScale: 1,
@@ -2149,6 +2182,12 @@ const DEFAULTS = {
     sunStops: buildDefaultChannelStops("sun"),
     moonStops: buildDefaultChannelStops("moon"),
     ambientStops: buildDefaultChannelStops("ambient"),
+    rimStops: buildDefaultChannelStops("rim"),
+    rimEnabled: false,
+    rimScale: 1,
+    rimWidth: 0.4,
+    ambientOcclusion: 0,
+    ambientShadowFloor: 0,
   } as SkyParams,
   wled: { host: "192.168.1.50", fps: 30, enabled: false } as WledParams,
   breath: {
@@ -2454,6 +2493,7 @@ const DEFAULTS = {
     reversed: false,
     ledSize: 0.01,
     maxSegmentLength: 0.05,
+    showOffsetsAndDomes: true,
     showBumpSurfaces: false,
     showBallSensors: false,
     bumpLightOpacity: 1,
@@ -2601,7 +2641,7 @@ function resolveChannelStops(
     stops?: LegacyTriStop[];
     palette?: Record<string, unknown>;
   },
-): Pick<SkyParams, "sunStops" | "moonStops" | "ambientStops"> {
+): Pick<SkyParams, "sunStops" | "moonStops" | "ambientStops" | "rimStops"> {
   let fallback: Pick<SkyParams, "sunStops" | "moonStops" | "ambientStops">;
   if (Array.isArray(savedSky.stops) && savedSky.stops.length > 0) {
     fallback = channelsFromLegacyStops(savedSky.stops);
@@ -2629,6 +2669,9 @@ function resolveChannelStops(
     ambientStops: Array.isArray(savedSky.ambientStops)
       ? savedSky.ambientStops
       : fallback.ambientStops,
+    rimStops: Array.isArray(savedSky.rimStops)
+      ? savedSky.rimStops
+      : DEFAULTS.sky.rimStops,
   };
 }
 
@@ -4029,6 +4072,10 @@ function resolveMapping(input: unknown): MappingParams {
       Number.isFinite(saved.maxSegmentLength)
         ? saved.maxSegmentLength
         : d.maxSegmentLength,
+    showOffsetsAndDomes:
+      typeof saved.showOffsetsAndDomes === "boolean"
+        ? saved.showOffsetsAndDomes
+        : d.showOffsetsAndDomes,
     showBumpSurfaces:
       typeof saved.showBumpSurfaces === "boolean"
         ? saved.showBumpSurfaces
@@ -4156,10 +4203,7 @@ function initialState() {
     strand: {
       ...DEFAULTS.strand,
       ...saved.strand,
-      colorProfile: {
-        ...DEFAULTS.strand.colorProfile,
-        ...(saved.strand?.colorProfile ?? {}),
-      },
+      colorProfile: resolveLedColorProfile(saved.strand?.colorProfile),
     },
     ambient: { ...DEFAULTS.ambient, ...saved.ambient },
     directional: { ...DEFAULTS.directional, ...saved.directional },
@@ -4167,6 +4211,7 @@ function initialState() {
       ...DEFAULTS.sky,
       ...savedSky,
       ...channels,
+      cycleLocked: true,
     },
     // Don't auto-resume streaming on page load: if the user reopens the app
     // they probably don't want it immediately blasting UDP to the strip.
@@ -4560,10 +4605,7 @@ export function applySnapshot(snap: Snapshot): Snapshot {
   s.setCloud(snap.cloud);
   s.setStrand({
     ...snap.strand,
-    colorProfile: {
-      ...DEFAULTS.strand.colorProfile,
-      ...(snap.strand?.colorProfile ?? {}),
-    },
+    colorProfile: resolveLedColorProfile(snap.strand?.colorProfile),
   });
   s.setAmbient(snap.ambient);
   s.setDirectional(snap.directional);
@@ -4572,11 +4614,13 @@ export function applySnapshot(snap: Snapshot): Snapshot {
     palette?: Record<string, unknown>;
   };
   const channels = resolveChannelStops(snapSky);
+  s.setCycleLocked(false);
   s.setSky({
     ...DEFAULTS.sky,
     ...snapSky,
     ...channels,
   });
+  s.setCycleLocked(true);
   // Same caveat as initialState — never re-enable streaming via a load.
   s.setWled({ ...snap.wled, enabled: false });
   s.setBreath(resolveBreath(snap.breath));

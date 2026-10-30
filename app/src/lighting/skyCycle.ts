@@ -15,6 +15,12 @@ export interface SkyLighting {
   moonColor: string;
   moonIntensity: number;
   moonDirection: Vec3;
+  /** Grazing colour for the current hour. Unused while rim is disabled. */
+  rimColor: string;
+  /** Rim brightness on the sun-facing edge. 0 when rim is off or the moon leads. */
+  rimSunIntensity: number;
+  /** Rim brightness on the moon-facing edge. */
+  rimMoonIntensity: number;
 }
 
 const TAU = Math.PI * 2;
@@ -74,18 +80,6 @@ function lerpHex(a: string, b: string, t: number): string {
   );
 }
 
-function saturateHex(hex: string, amount: number): string {
-  const [r8, g8, b8] = hexToRgb(hex);
-  const r = r8 / 255;
-  const g = g8 / 255;
-  const b = b8 / 255;
-  const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  const sr = clamp01(l + (r - l) * amount);
-  const sg = clamp01(l + (g - l) * amount);
-  const sb = clamp01(l + (b - l) * amount);
-  return rgbToHex(sr * 255, sg * 255, sb * 255);
-}
-
 function directionFromAzAlt(azimuthRad: number, altitudeRad: number): Vec3 {
   const c = Math.cos(altitudeRad);
   return [
@@ -93,6 +87,31 @@ function directionFromAzAlt(azimuthRad: number, altitudeRad: number): Vec3 {
     Math.sin(altitudeRad),
     c * Math.sin(azimuthRad),
   ];
+}
+
+/** Equinox at a mid latitude. Noon stays near 40°, so the path arches. */
+const SKY_LATITUDE_RAD = (50 * Math.PI) / 180;
+
+/**
+ * Sun rises in the east, arches across the sky, and sets in the west.
+ * The moon takes the opposite point, so it arches across at night.
+ */
+export function skyBodyDirections(hour: number): {
+  sunDirection: Vec3;
+  moonDirection: Vec3;
+  sunAltitudeDeg: number;
+} {
+  const ha = ((normalizeHour(hour) - 12) / 24) * TAU;
+  const altitude = Math.asin(
+    Math.max(-1, Math.min(1, Math.cos(SKY_LATITUDE_RAD) * Math.cos(ha))),
+  );
+  // +X at sunrise, −Z at noon, −X at sunset.
+  const sunDirection = directionFromAzAlt(-ha - Math.PI / 2, altitude);
+  return {
+    sunDirection,
+    moonDirection: [-sunDirection[0], -sunDirection[1], -sunDirection[2]],
+    sunAltitudeDeg: (altitude * 180) / Math.PI,
+  };
 }
 
 /**
@@ -141,6 +160,50 @@ export function interpolateChannel(
 }
 
 /**
+ * Interpolate an optional per-stop intensity. Returns null when no stop
+ * carries one, so older timelines keep the altitude envelope.
+ * A stop without `intensity` counts as 1 beside stops that have it.
+ */
+export function interpolateChannelIntensity(
+  stops: SkyChannelStop[],
+  hour: number,
+): number | null {
+  if (stops.length === 0) return null;
+  if (!stops.some((stop) => typeof stop.intensity === "number")) return null;
+  if (stops.length === 1) return Math.max(0, stops[0].intensity ?? 1);
+  const sorted = [...stops].sort((a, b) => a.timeHours - b.timeHours);
+  const h = normalizeHour(hour);
+  let a: SkyChannelStop = sorted[sorted.length - 1];
+  let b: SkyChannelStop = sorted[0];
+  let aHour = a.timeHours - 24;
+  let bHour = b.timeHours;
+  if (h < sorted[0].timeHours) {
+    a = sorted[sorted.length - 1];
+    b = sorted[0];
+    aHour = a.timeHours - 24;
+    bHour = b.timeHours;
+  } else if (h > sorted[sorted.length - 1].timeHours) {
+    a = sorted[sorted.length - 1];
+    b = sorted[0];
+    aHour = a.timeHours;
+    bHour = b.timeHours + 24;
+  } else {
+    for (let i = 0; i < sorted.length - 1; i++) {
+      if (h >= sorted[i].timeHours && h <= sorted[i + 1].timeHours) {
+        a = sorted[i];
+        b = sorted[i + 1];
+        aHour = sorted[i].timeHours;
+        bHour = sorted[i + 1].timeHours;
+        break;
+      }
+    }
+  }
+  const span = Math.max(1e-6, bHour - aHour);
+  const t = clamp01((h - aHour) / span);
+  return Math.max(0, lerp(a.intensity ?? 1, b.intensity ?? 1, t));
+}
+
+/**
  * Returns physically plausible sun/moon vectors, plus the three colors
  * from the current position along each channel's timeline. Sun and moon
  * are placed opposite each other on the sky dome; their intensity
@@ -153,20 +216,15 @@ export function computeSkyLighting(sky: SkyParams): SkyLighting {
   const rawSunColor = interpolateChannel(sky.sunStops, hour, "#05070d");
   const rawMoonColor = interpolateChannel(sky.moonStops, hour, "#b7c8ff");
   const rawAmbientColor = interpolateChannel(sky.ambientStops, hour, "#0c1734");
+  const rawRimColor = interpolateChannel(sky.rimStops ?? [], hour, "#ffffff");
+  const sunStopIntensity = interpolateChannelIntensity(sky.sunStops, hour);
+  const moonStopIntensity = interpolateChannelIntensity(sky.moonStops, hour);
+  const ambientStopIntensity = interpolateChannelIntensity(sky.ambientStops, hour);
+  const rimStopIntensity = interpolateChannelIntensity(sky.rimStops ?? [], hour);
 
-  // Use one continuous orbital angle for both horizontal + vertical motion.
-  // The previous formulation derived altitude from `sin(phase)` and azimuth
-  // from the same phase, which folds `cos(altitude)` into `|cos(phase)|` and
-  // makes the trajectory appear to reverse around horizon crossings.
-  const orbital = ((hour - 6) / 24) * TAU;
-  const sunDirection: Vec3 = [Math.cos(orbital), Math.sin(orbital), 0];
+  const { sunDirection, moonDirection, sunAltitudeDeg } = skyBodyDirections(hour);
   const solar = sunDirection[1];
-  const altitudeDeg = (Math.asin(solar) * 180) / Math.PI;
-  const moonDirection: Vec3 = [
-    -sunDirection[0],
-    -sunDirection[1],
-    -sunDirection[2],
-  ];
+  const altitudeDeg = sunAltitudeDeg;
 
   const legacyStart = sky.horizonCutoffDeg ?? -7;
   const legacyFull = legacyStart + Math.max(0, sky.horizonSoftnessDeg ?? 0);
@@ -188,13 +246,29 @@ export function computeSkyLighting(sky: SkyParams): SkyLighting {
   const sunBase = 1.1 * sunVisible + 0.35 * twilightSun;
   const moonBase = 0.75 * moonVisible + 0.2 * twilightMoon;
 
-  // Clamp the altitude envelope, then scale: clamping after scaling made
-  // Sun/Moon scale above ~0.9 / ~1.05 do nothing.
-  const ambientIntensity = ambientBase * sky.ambientScale * vis;
-  const sunIntensity = clamp01(sunBase) * Math.max(0, sky.sunScale) * 1.6 * vis;
-  const moonIntensity = clamp01(moonBase) * Math.max(0, sky.moonScale) * 0.95 * vis;
+  // Stop intensity replaces the legacy 1.6 / 0.95 gains when a timeline
+  // carries one. Older stops omit it, so those clouds stay as they were.
+  // A palette direct intensity of 1 is therefore the full altitude envelope.
+  const ambientIntensity =
+    (ambientStopIntensity ?? ambientBase) * sky.ambientScale * vis;
+  const sunIntensity =
+    clamp01(sunBase) *
+    Math.max(0, sky.sunScale) *
+    (sunStopIntensity ?? 1.6) *
+    vis;
+  const moonIntensity =
+    clamp01(moonBase) *
+    Math.max(0, sky.moonScale) *
+    (moonStopIntensity ?? 0.95) *
+    vis;
+  const rimLevel = sky.rimEnabled
+    ? Math.max(0, rimStopIntensity ?? 1) * Math.max(0, sky.rimScale ?? 1) * vis
+    : 0;
+  // Follow whichever body is up. A hard split would pop at the horizon,
+  // so the two rims crossfade only while sun and moon are both near it.
+  const sunMix = smoothstep(-0.2, 0.2, sunVisible - moonVisible);
 
-  const ambientColorFinal = saturateHex(rawAmbientColor, 1.08 + twilight * 0.25);
+  const ambientColorFinal = rawAmbientColor;
   // Preserve user-selected sun/moon hue in LED output; intensity already
   // handles day/night dynamics so extra color boosting causes drift.
   const sunColorFinal = rawSunColor;
@@ -215,5 +289,8 @@ export function computeSkyLighting(sky: SkyParams): SkyLighting {
     moonColor: rawMoonColor,
     moonIntensity,
     moonDirection,
+    rimColor: rawRimColor,
+    rimSunIntensity: rimLevel * sunMix,
+    rimMoonIntensity: rimLevel * (1 - sunMix),
   };
 }

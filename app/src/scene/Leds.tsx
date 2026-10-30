@@ -59,15 +59,22 @@ import { computeSkyLighting } from "../lighting/skyCycle";
 import { sharedLightningController } from "../lighting/lightning";
 import { WledStreamClient } from "../wled/client";
 import { publishFrame, publishLedPositions } from "../stream/frameBuffer";
-import {
-  encodeLedRgb,
-  srgbByteToLinear,
-} from "../lighting/ledColor";
+import { encodeLedRgb, srgbChannelToLinear } from "../lighting/ledColor";
+
+function linearHex(hex: string): [number, number, number] {
+  const [r, g, b] = hexToVec3(hex);
+  return [srgbChannelToLinear(r), srgbChannelToLinear(g), srgbChannelToLinear(b)];
+}
 
 function clamp01(v: number): number {
   if (v <= 0) return 0;
   if (v >= 1) return 1;
   return v;
+}
+
+function smoothstep01(t: number): number {
+  const x = clamp01(t);
+  return x * x * (3 - 2 * x);
 }
 const STREAM_BYTE_DEADBAND = 1;
 
@@ -144,6 +151,7 @@ export function Leds() {
       localNormals: new Float32Array(n * 3),
       sunTransmission: new Float32Array(n),
       moonTransmission: new Float32Array(n),
+      skyExposure: new Float32Array(n),
       validPositions: new Uint8Array(n),
       colorFloats: new Float32Array(n * 3),
       timeColorFloats: new Float32Array(n * 3),
@@ -392,6 +400,12 @@ export function Leds() {
   const pyramidRayOrigin = useMemo(() => new Vector3(), []);
   const pyramidRayDir = useMemo(() => new Vector3(), []);
   const pyramidHitsRef = useRef<any[]>([]);
+  const transmissionSmoothRef = useRef<{
+    t: number;
+    hour: number;
+    sun: Float32Array | null;
+    moon: Float32Array | null;
+  }>({ t: 0, hour: 0, sun: null, moon: null });
 
   // Long-lived WLED streaming client. Lightning uses a shared controller
   // so the 3D bolt visualisation sees the same active strikes.
@@ -491,18 +505,23 @@ export function Leds() {
         ];
         let sunPyramidTransmission = 1;
         let moonPyramidTransmission = 1;
-        const sunFacing =
-          originNormal[0] * sunToLight[0] +
+        const sunLen = Math.hypot(sunToLight[0], sunToLight[1], sunToLight[2]) || 1;
+        const moonLen = Math.hypot(moonToLight[0], moonToLight[1], moonToLight[2]) || 1;
+        const sunCos =
+          (originNormal[0] * sunToLight[0] +
             originNormal[1] * sunToLight[1] +
-            originNormal[2] * sunToLight[2] >
-          0;
-        const moonFacing =
-          originNormal[0] * moonToLight[0] +
+            originNormal[2] * sunToLight[2]) /
+          sunLen;
+        const moonCos =
+          (originNormal[0] * moonToLight[0] +
             originNormal[1] * moonToLight[1] +
-            originNormal[2] * moonToLight[2] >
-          0;
-        if (!sunFacing) sunPyramidTransmission = pyramidBlocked;
-        if (!moonFacing) moonPyramidTransmission = pyramidBlocked;
+            originNormal[2] * moonToLight[2]) /
+          moonLen;
+        // Open across a wide angle so the shadow edge slides instead of popping.
+        const sunGate = smoothstep01((sunCos + 0.35) / 0.9);
+        const moonGate = smoothstep01((moonCos + 0.35) / 0.9);
+        sunPyramidTransmission = pyramidBlocked + (1 - pyramidBlocked) * sunGate;
+        moonPyramidTransmission = pyramidBlocked + (1 - pyramidBlocked) * moonGate;
         if (mapping.pyramidLightOpacity > 0 && meshOccluder) {
           const localSensorRadius =
             strand.ledSize / Math.max(1e-6, Math.abs(meshTarget.scale));
@@ -561,6 +580,37 @@ export function Leds() {
       buffers.sunTransmission.fill(1);
       buffers.moonTransmission.fill(1);
     }
+    // Mesh occlusion still crosses a ridge in one frame. Ease that step
+    // while time is playing, and jump straight there when the clock is scrubbed.
+    {
+      const nowMs = performance.now();
+      const smooth = transmissionSmoothRef.current;
+      const dt = smooth.t > 0 ? Math.min(0.1, (nowMs - smooth.t) / 1000) : 0;
+      let dh = sky.timeHours - smooth.hour;
+      if (dh > 12) dh -= 24;
+      if (dh < -12) dh += 24;
+      const expected = sky.autoPlay
+        ? (24 / Math.max(1, sky.cycleSeconds)) * dt
+        : 0;
+      const scrubbed = smooth.t > 0 && Math.abs(dh - expected) > 0.08;
+      smooth.t = nowMs;
+      smooth.hour = sky.timeHours;
+      if (!smooth.sun || smooth.sun.length !== buffers.n || !smooth.moon) {
+        smooth.sun = new Float32Array(buffers.sunTransmission);
+        smooth.moon = new Float32Array(buffers.moonTransmission);
+      } else if (!scrubbed && dt > 0) {
+        const alpha = 1 - Math.exp(-dt / 0.9);
+        for (let i = 0; i < buffers.n; i++) {
+          smooth.sun[i] += (buffers.sunTransmission[i] - smooth.sun[i]) * alpha;
+          smooth.moon[i] += (buffers.moonTransmission[i] - smooth.moon[i]) * alpha;
+          buffers.sunTransmission[i] = smooth.sun[i];
+          buffers.moonTransmission[i] = smooth.moon[i];
+        }
+      } else {
+        smooth.sun.set(buffers.sunTransmission);
+        smooth.moon.set(buffers.moonTransmission);
+      }
+    }
     const skyAmount = clamp01(sky.visualizationAmount ?? 1);
     const manualBlend = sky.enabled
       ? 1 - (1 - MANUAL_BLEND_WHEN_SKY) * skyAmount
@@ -574,7 +624,7 @@ export function Leds() {
       const timeLights: ShadeLight[] = [
         {
           type: "ambient",
-          color: hexToVec3(ambient.color),
+          color: linearHex(ambient.color),
           intensity: ambient.intensity * manualBlend,
         },
       ];
@@ -590,8 +640,8 @@ export function Leds() {
         timeLights.push(
           {
             type: "hemisphere",
-            skyColor: hexToVec3(skyLighting.skyColor),
-            groundColor: hexToVec3(skyLighting.groundColor),
+            skyColor: linearHex(skyLighting.skyColor),
+            groundColor: linearHex(skyLighting.groundColor),
             intensity: skyLighting.hemiIntensity,
           },
           {
@@ -601,7 +651,7 @@ export function Leds() {
               cloudCenter[1] + skyLighting.sunDirection[1] * orbitRadiusY,
               cloudCenter[2] + skyLighting.sunDirection[2] * orbitRadiusZ,
             ],
-            color: hexToVec3(skyLighting.sunColor),
+            color: linearHex(skyLighting.sunColor),
             intensity: skyLighting.sunIntensity,
             decay: Math.max(0, sky.lightDecay ?? 1),
             distance: 0,
@@ -622,7 +672,7 @@ export function Leds() {
               cloudCenter[1] + skyLighting.moonDirection[1] * orbitRadiusY,
               cloudCenter[2] + skyLighting.moonDirection[2] * orbitRadiusZ,
             ],
-            color: hexToVec3(skyLighting.moonColor),
+            color: linearHex(skyLighting.moonColor),
             intensity: skyLighting.moonIntensity,
             decay: Math.max(0, sky.lightDecay ?? 1),
             distance: 0,
@@ -633,6 +683,37 @@ export function Leds() {
             transmission: buffers.moonTransmission,
           },
         );
+        const rimWidth = clamp01(sky.rimWidth ?? 0.4);
+        if (sky.rimEnabled && skyLighting.rimSunIntensity > 0.001) {
+          timeLights.push({
+            type: "rim",
+            direction: skyLighting.sunDirection,
+            color: linearHex(skyLighting.rimColor),
+            intensity: skyLighting.rimSunIntensity,
+            width: rimWidth,
+            transmission: buffers.sunTransmission,
+          });
+        }
+        if (sky.rimEnabled && skyLighting.rimMoonIntensity > 0.001) {
+          timeLights.push({
+            type: "rim",
+            direction: skyLighting.moonDirection,
+            color: linearHex(skyLighting.rimColor),
+            intensity: skyLighting.rimMoonIntensity,
+            width: rimWidth,
+            transmission: buffers.moonTransmission,
+          });
+        }
+      }
+      const occlusion = clamp01(sky.ambientOcclusion ?? 0);
+      if (occlusion > 0) {
+        for (let i = 0; i < buffers.n; i++) {
+          const open = Math.max(
+            buffers.sunTransmission[i] ?? 1,
+            buffers.moonTransmission[i] ?? 1,
+          );
+          buffers.skyExposure[i] = open;
+        }
       }
       shadeLeds(
         buffers.positions,
@@ -646,6 +727,9 @@ export function Leds() {
           hemisphereAverage: true,
           hemisphereFocusExponent: Math.max(0, strand.sensorHemisphereFocus),
           ambientDucking: ambient.ducking ?? 0.75,
+          ambientOcclusion: occlusion,
+          ambientShadowFloor: clamp01(sky.ambientShadowFloor ?? 0),
+          skyExposure: occlusion > 0 ? buffers.skyExposure : undefined,
         },
       );
     } else {
@@ -1050,7 +1134,7 @@ export function Leds() {
       }
     }
 
-    const locatorColor = hexToVec3(ledLocator.color);
+    const locatorColor = linearHex(ledLocator.color);
     for (let i = 0; i < buffers.n; i++) {
       const i3 = i * 3;
       if (
@@ -1074,11 +1158,7 @@ export function Leds() {
         buffers.colorFloats[i3 + 2],
         strand.colorProfile,
       );
-      tmpColor.setRGB(
-        srgbByteToLinear(red),
-        srgbByteToLinear(green),
-        srgbByteToLinear(blue),
-      );
+      tmpColor.setRGB(red / 255, green / 255, blue / 255);
       mesh.setColorAt(i, tmpColor);
     }
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;

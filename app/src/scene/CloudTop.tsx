@@ -19,7 +19,6 @@ import { getFrame } from "../stream/frameBuffer";
 
 /** Upper bound on LEDs the covering shader iterates over. */
 const MAX_COVER_LEDS = 2048;
-const EMISSIVE_SCALE = 0.12;
 
 type ShaderHandle = {
   uniforms: Record<string, { value: unknown }>;
@@ -134,27 +133,40 @@ function CloudTopMesh({ geometry }: { geometry: BufferGeometry }) {
           "#include <emissivemap_fragment>",
           [
             "#include <emissivemap_fragment>",
-            "vec3 cloudTopLedLight = vec3(0.0);",
+            "vec3 cloudTopAccum = vec3(0.0);",
+            "float cloudTopWeight = 0.0;",
+            "float cloudTopCover = 0.0;",
             "for (int i = 0; i < CLOUD_TOP_MAX_LEDS; i++) {",
             "  if (i >= cloudTopLedCount) break;",
             "  vec4 ledPos = texelFetch(cloudTopLeds, ivec2(i, 0), 0);",
             "  if (ledPos.w < 0.5) continue;",
             "  vec3 toFragment = vCloudTopLocalPosition - ledPos.xyz;",
             "  float dist = length(toFragment);",
-            "  if (dist > cloudTopRadius) continue;",
+            "  float t = dist / cloudTopRadius;",
+            "  if (t > 1.0) continue;",
             "  vec3 ledNormal = texelFetch(cloudTopLeds, ivec2(i, 1), 0).xyz;",
-            "  float facing = dist < 1e-6 ? 1.0 : max(0.0, dot(toFragment, ledNormal) / dist);",
-            "  if (facing <= 0.0) continue;",
-            "  float weight = exp(-2.5 * dist / cloudTopRadius) * pow(facing, cloudTopFocus);",
-            // A diffuser should spread each source, not add hundreds of
-            // overlapping sources until the entire covering clips white.
-            "  cloudTopLedLight = max(cloudTopLedLight, texelFetch(cloudTopLeds, ivec2(i, 2), 0).rgb * weight);",
+            "  float ndot = dist < 1e-6 ? 1.0 : dot(toFragment, ledNormal) / dist;",
+            "  if (ndot <= 0.0) continue;",
+            // Colour follows the nearby LEDs, so a dome's lit face and the
+            // shadow behind it stay distinct. Coverage stays wide, so the
+            // gaps between LEDs do not fall dark.
+            "  float coverHere = 1.0 - smoothstep(0.55, 1.0, t);",
+            "  float detail = exp(-18.0 * t);",
+            "  float lobe = mix(0.7, 1.0, pow(ndot, cloudTopFocus));",
+            "  float weight = detail * lobe;",
+            "  cloudTopAccum += texelFetch(cloudTopLeds, ivec2(i, 2), 0).rgb * weight;",
+            "  cloudTopWeight += weight;",
+            "  cloudTopCover = max(cloudTopCover, coverHere);",
             "}",
-            "totalEmissiveRadiance += min(cloudTopLedLight, vec3(1.0)) * cloudTopTint * cloudTopGlowStrength;",
+            "vec3 cloudTopHue = cloudTopWeight > 1e-4 ? cloudTopAccum / cloudTopWeight : vec3(0.0);",
+            "vec3 cloudTopShown = cloudTopHue * cloudTopCover * cloudTopTint * cloudTopGlowStrength;",
+            "float cloudTopLimit = max(cloudTopShown.r, max(cloudTopShown.g, cloudTopShown.b));",
+            "if (cloudTopLimit > 1.0) cloudTopShown /= cloudTopLimit;",
+            "totalEmissiveRadiance += cloudTopShown;",
           ].join("\n"),
         );
     };
-    next.customProgramCacheKey = () => "cloud-top-leds-v2";
+    next.customProgramCacheKey = () => "cloud-top-leds-v6";
     return next;
   }, [uniforms]);
 
@@ -162,7 +174,7 @@ function CloudTopMesh({ geometry }: { geometry: BufferGeometry }) {
     uniforms.cloudTopTint.value.set(cloudTop.tint);
   }, [cloudTop.tint, uniforms]);
   useEffect(() => {
-    uniforms.cloudTopGlowStrength.value = cloudTop.glowStrength * EMISSIVE_SCALE;
+    uniforms.cloudTopGlowStrength.value = cloudTop.glowStrength;
     uniforms.cloudTopFocus.value = cloudTop.glowFocus;
   }, [cloudTop.glowStrength, cloudTop.glowFocus, uniforms]);
 
@@ -186,10 +198,9 @@ function CloudTopMesh({ geometry }: { geometry: BufferGeometry }) {
     mesh.updateWorldMatrix(true, false);
     inverseWorld.copy(mesh.matrixWorld).invert();
 
-    // The control describes the visible softness at the covering. Light must
-    // first cross the air gap between the pyramid LEDs and that covering, so
-    // use a wider transport radius than the final displayed falloff.
-    const transportRadius = cloudTop.glowRadius * 2;
+    // The slider is the visible softness. Light also crosses the gap from the
+    // LED to the covering, so the transport radius is a bit wider than that.
+    const transportRadius = Math.max(0.001, cloudTop.glowRadius) * 2.0;
     uniforms.cloudTopRadius.value =
       transportRadius / Math.max(0.001, cloudTop.scale);
 

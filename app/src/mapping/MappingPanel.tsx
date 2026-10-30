@@ -317,6 +317,27 @@ export function MappingPanel({
       </Section>
 
       <Section title={`Place & shape — ${count} LED${count === 1 ? "" : "s"}`}>
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 8,
+            cursor: "pointer",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={mapping.showOffsetsAndDomes !== false}
+            onChange={(e) =>
+              setMapping({
+                showOffsetsAndDomes: e.target.checked,
+                ...(e.target.checked ? {} : { tool: "place" }),
+              })
+            }
+          />
+          <span>Show offsets and domes</span>
+        </label>
         <div
           style={{
             display: "flex",
@@ -330,33 +351,40 @@ export function MappingPanel({
           >
             Place
           </ToolButton>
-          <ToolButton
-            active={tool === "offset"}
-            onClick={() => setMapping({ tool: "offset" })}
-          >
-            Offset
-          </ToolButton>
-          <ToolButton
-            active={tool === "gaussian"}
-            onClick={() => setMapping({ tool: "gaussian" })}
-          >
-            Dome
-          </ToolButton>
+          {mapping.showOffsetsAndDomes !== false && (
+            <>
+              <ToolButton
+                active={tool === "offset"}
+                onClick={() => setMapping({ tool: "offset" })}
+              >
+                Offset
+              </ToolButton>
+              <ToolButton
+                active={tool === "gaussian"}
+                onClick={() => setMapping({ tool: "gaussian" })}
+              >
+                Dome
+              </ToolButton>
+            </>
+          )}
         </div>
         <div style={{ opacity: 0.7, lineHeight: 1.4, marginBottom: 8 }}>
-          {tool === "place"
+          {tool === "place" || mapping.showOffsetsAndDomes === false
             ? "Click the cloud surface to place the next LED. Drag a bead to slide it on the surface. You can only add or delete at the end of the string."
             : tool === "offset"
               ? "Drag a bead along its surface normal to offset it without changing the hand-placed position."
               : "Click the surface to place a smooth dome. Drag its marker to move the centre, then shape its peak and footprint below."}
         </div>
-        {tool === "offset" && selected !== null && mapping.leds[selected] && (
+        {mapping.showOffsetsAndDomes !== false &&
+          tool === "offset" &&
+          selected !== null &&
+          mapping.leds[selected] && (
           <div style={{ marginBottom: 8, opacity: 0.85 }}>
             LED #{displayNumber(selected)} offset:{" "}
             {((mapping.leds[selected].offset ?? 0) * 100).toFixed(1)} cm
           </div>
         )}
-        {tool === "gaussian" && (
+        {mapping.showOffsetsAndDomes !== false && tool === "gaussian" && (
           <>
             <div style={{ marginBottom: 6, opacity: 0.85 }}>
               {gaussians.length} dome{gaussians.length === 1 ? "" : "s"}
@@ -478,7 +506,9 @@ export function MappingPanel({
             </div>
           </>
         )}
-        {tool === "gaussian" && selectedGaussian && (
+        {mapping.showOffsetsAndDomes !== false &&
+          tool === "gaussian" &&
+          selectedGaussian && (
           <div
             style={{
               display: "grid",

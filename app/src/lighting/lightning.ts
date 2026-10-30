@@ -13,6 +13,7 @@ import {
   type CloudTransform,
 } from "../scene/cloudTransform";
 import { hexToVec3 } from "./shade";
+import { srgbChannelToLinear } from "./ledColor";
 import {
   ensureSpriteImage,
   getCachedSpriteImage,
@@ -170,15 +171,20 @@ function paletteColorStops(
   [number, number, number],
   [number, number, number],
 ] {
-  return [hexToVec3(palette[0]), hexToVec3(palette[1]), hexToVec3(palette[2])];
+  return [linearHex(palette[0]), linearHex(palette[1]), linearHex(palette[2])];
+}
+
+function linearHex(hex: string): [number, number, number] {
+  const [r, g, b] = hexToVec3(hex);
+  return [srgbChannelToLinear(r), srgbChannelToLinear(g), srgbChannelToLinear(b)];
 }
 
 function paletteTintRgb(
   palette: LightningPalette,
 ): [number, number, number] {
-  const c0 = hexToVec3(palette[0]);
-  const c1 = hexToVec3(palette[1]);
-  const c2 = hexToVec3(palette[2]);
+  const c0 = linearHex(palette[0]);
+  const c1 = linearHex(palette[1]);
+  const c2 = linearHex(palette[2]);
   return [
     (c0[0] + c1[0] + c2[0]) / 3,
     (c0[1] + c1[1] + c2[1]) / 3,

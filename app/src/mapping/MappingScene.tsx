@@ -36,7 +36,7 @@ import {
   spotConeAttenuation,
   spreadToSpotAngle,
 } from "../lighting/shade";
-import { encodeLedRgb, srgbByteToLinear } from "../lighting/ledColor";
+import { encodeLedRgb, srgbChannelToLinear } from "../lighting/ledColor";
 import {
   clearBakedSurfaceGeometry,
   getBakedSurfaceGeometry,
@@ -343,17 +343,19 @@ export function MappingScene({
           mapping.flipUpDown,
           mapping.flipLeftRight,
         );
+        const showEdits = mapping.showOffsetsAndDomes !== false;
+        const surfaceGaussians = showEdits ? orientedGaussians : [];
         const displaced = displaceLed(
           lp,
           ln,
-          orientedGaussians,
-          led.offset ?? 0,
+          surfaceGaussians,
+          showEdits ? (led.offset ?? 0) : 0,
           mapping.bumpAdditivity,
         );
         const displaced0 = displaceLed(
           lp,
           ln,
-          orientedGaussians,
+          surfaceGaussians,
           0,
           mapping.bumpAdditivity,
         );
@@ -396,6 +398,7 @@ export function MappingScene({
     mapping.leds,
     mapping.flipUpDown,
     mapping.flipLeftRight,
+    mapping.showOffsetsAndDomes,
     orientedGaussians,
     mapping.bumpAdditivity,
     meshMatrix,
@@ -429,9 +432,9 @@ export function MappingScene({
       now - lastMappingSendRef.current >= 1000 / Math.max(1, wled.fps);
     if (!previewDue && !streamDue) return;
     const packedColor = Number.parseInt(mapping.mappingLightColor.slice(1), 16);
-    const outputR = (packedColor >> 16) & 255;
-    const outputG = (packedColor >> 8) & 255;
-    const outputB = packedColor & 255;
+    const outputR = srgbChannelToLinear(((packedColor >> 16) & 255) / 255);
+    const outputG = srgbChannelToLinear(((packedColor >> 8) & 255) / 255);
+    const outputB = srgbChannelToLinear((packedColor & 255) / 255);
     if (outputLevelsRef.current.length !== mapping.leds.length) {
       outputLevelsRef.current = new Float32Array(mapping.leds.length);
     }
@@ -514,7 +517,9 @@ export function MappingScene({
         mapping.mappingLightFocus,
       );
       const domeTransmission =
-        mapping.bumpLightOpacity > 0 && orientedGaussians.length > 0
+        mapping.showOffsetsAndDomes !== false &&
+        mapping.bumpLightOpacity > 0 &&
+        orientedGaussians.length > 0
           ? gaussianRayTransmission(
               bead.localPos,
               lightFromPosLocal,
@@ -569,9 +574,9 @@ export function MappingScene({
       );
       outputLevelsRef.current[physicalIndex] = level;
       const [red, green, blue] = encodeLedRgb(
-        level * (outputR / 255),
-        level * (outputG / 255),
-        level * (outputB / 255),
+        level * outputR,
+        level * outputG,
+        level * outputB,
         strand.colorProfile,
       );
       bytes[outIndex * 3] = red;
@@ -579,11 +584,7 @@ export function MappingScene({
       bytes[outIndex * 3 + 2] = blue;
       const material = outputMaterialRefs.current[physicalIndex];
       if (previewDue && material) {
-        material.color.setRGB(
-          srgbByteToLinear(red),
-          srgbByteToLinear(green),
-          srgbByteToLinear(blue),
-        );
+        material.color.setRGB(red / 255, green / 255, blue / 255);
         material.emissive.copy(material.color);
         material.emissiveIntensity = 1;
       }
@@ -955,7 +956,9 @@ export function MappingScene({
           />
         </mesh>
       )}
-      {mapping.showBakedSurface && bakedSurface && (
+      {mapping.showOffsetsAndDomes !== false &&
+        mapping.showBakedSurface &&
+        bakedSurface && (
         <mesh
           geometry={bakedSurface}
           scale={mesh.scale}
@@ -1099,16 +1102,12 @@ export function MappingScene({
                     16,
                   );
                   const [red, green, blue] = encodeLedRgb(
-                    level * (((packed >> 16) & 255) / 255),
-                    level * (((packed >> 8) & 255) / 255),
-                    level * ((packed & 255) / 255),
+                    level * srgbChannelToLinear(((packed >> 16) & 255) / 255),
+                    level * srgbChannelToLinear(((packed >> 8) & 255) / 255),
+                    level * srgbChannelToLinear((packed & 255) / 255),
                     strand.colorProfile,
                   );
-                  material.color.setRGB(
-                    srgbByteToLinear(red),
-                    srgbByteToLinear(green),
-                    srgbByteToLinear(blue),
-                  );
+                  material.color.setRGB(red / 255, green / 255, blue / 255);
                   material.emissive.copy(material.color);
                   material.emissiveIntensity = 1;
                 }}
@@ -1136,7 +1135,8 @@ export function MappingScene({
         );
       })}
 
-      {gaussianMarkers.map(({ id, pos, normal, surface }) => {
+      {mapping.showOffsetsAndDomes !== false &&
+        gaussianMarkers.map(({ id, pos, normal, surface }) => {
         const isSel = id === selectedGaussianId;
         const color = isSel ? GAUSS_SELECTED : GAUSS_COLOR;
         return (

@@ -4,6 +4,8 @@ import {
   type AmbientLightParams,
   type SkyParams,
 } from "../state";
+import { CycleField } from "./CycleField";
+import { skyBodyDirections } from "../lighting/skyCycle";
 import { useDraggable } from "./useDraggable";
 import { ColorInput } from "./ColorInput";
 
@@ -24,8 +26,7 @@ export function TimeOfDayPanel({ visible = true }: { visible?: boolean }) {
   if (!visible) return null;
   const upd = (patch: Partial<SkyParams>) => setSky(patch);
   const updAmbient = (patch: Partial<AmbientLightParams>) => setAmbient(patch);
-  const orbital = ((sky.timeHours - 6) / 24) * Math.PI * 2;
-  const sunAltitudeDeg = (Math.asin(Math.sin(orbital)) * 180) / Math.PI;
+  const sunAltitudeDeg = skyBodyDirections(sky.timeHours).sunAltitudeDeg;
   const moonAltitudeDeg = -sunAltitudeDeg;
   return (
     <div ref={panelRef} style={{ ...panelStyle, ...dynStyle }}>
@@ -53,16 +54,22 @@ export function TimeOfDayPanel({ visible = true }: { visible?: boolean }) {
           onChange={(v) => upd({ visualizationAmount: v })}
           formatValue={(v) => v.toFixed(2)}
         />
-        <SliderRow
+        <CycleField
           label="24h cycle"
-          value={sky.cycleSeconds}
-          min={20}
-          max={900}
-          step={1}
-          onChange={(v) => upd({ cycleSeconds: v })}
-          formatValue={(v) =>
-            `${v.toFixed(0)}s${sky.cycleLocked ? " (locked)" : ""}`
-          }
+          labelStyle={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: 11,
+          }}
+          inputStyle={{
+            width: 64,
+            background: "rgba(0,0,0,0.35)",
+            color: "inherit",
+            border: "1px solid rgba(255,255,255,0.16)",
+            borderRadius: 4,
+            padding: "2px 6px",
+          }}
         />
         <SliderRow
           label="Ambient scale"
@@ -244,6 +251,51 @@ export function TimeOfDayPanel({ visible = true }: { visible?: boolean }) {
           }
           formatValue={(v) => `${v.toFixed(1)}°`}
         />
+        <div style={sectionLabel}>Atmosphere</div>
+        <label style={inlineLabel}>
+          <input
+            type="checkbox"
+            checked={!!sky.rimEnabled}
+            onChange={(e) => upd({ rimEnabled: e.target.checked })}
+          />
+          rim light
+        </label>
+        <SliderRow
+          label="Rim scale"
+          value={sky.rimScale ?? 1}
+          min={0}
+          max={2}
+          step={0.01}
+          onChange={(v) => upd({ rimScale: v })}
+          formatValue={(v) => v.toFixed(2)}
+        />
+        <SliderRow
+          label="Rim width"
+          value={sky.rimWidth ?? 0.4}
+          min={0.02}
+          max={1}
+          step={0.01}
+          onChange={(v) => upd({ rimWidth: v })}
+          formatValue={(v) => v.toFixed(2)}
+        />
+        <SliderRow
+          label="Ambient occlusion"
+          value={sky.ambientOcclusion ?? 0}
+          min={0}
+          max={1}
+          step={0.01}
+          onChange={(v) => upd({ ambientOcclusion: v })}
+          formatValue={(v) => v.toFixed(2)}
+        />
+        <SliderRow
+          label="Shadow floor"
+          value={sky.ambientShadowFloor ?? 0}
+          min={0}
+          max={1}
+          step={0.01}
+          onChange={(v) => upd({ ambientShadowFloor: v })}
+          formatValue={(v) => v.toFixed(2)}
+        />
         <div style={sectionLabel}>Lights</div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11 }}>
           <span style={{ width: 88, opacity: 0.85 }}>Ambient</span>
@@ -274,8 +326,9 @@ export function TimeOfDayPanel({ visible = true }: { visible?: boolean }) {
         />
       </div>
       <div style={{ marginTop: 6, fontSize: 10, opacity: 0.65, lineHeight: 1.35 }}>
-        Color stops for sun, moon, and ambient live on the sky timeline.
-        This panel sets how strongly that lighting paints the cloud.
+        Color stops for sun, moon, ambient, and rim live on the sky timeline.
+        Direct light keeps the cloud shading. Ambient fills the shade and
+        ducks back where the sun or moon is strong. Rim sits on the lit edges.
       </div>
     </div>
   );
